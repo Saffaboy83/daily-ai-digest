@@ -3,6 +3,16 @@
   "outputDirectory": "dist/public",
   "framework": null,
   "functions": {
+    "api/digest.ts": {
+      "memory": 512,
+      "maxDuration": 60,
+      "includeFiles": "api/_lib/**"
+    },
+    "api/upload-media.ts": {
+      "memory": 512,
+      "maxDuration": 60,
+      "includeFiles": "api/_lib/**"
+    },
     "api/**/*.ts": {
       "memory": 256,
       "maxDuration": 30,
