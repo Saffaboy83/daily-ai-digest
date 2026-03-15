@@ -23,6 +23,13 @@ import {
   VolumeX,
   LayoutDashboard,
   X,
+  Lightbulb,
+  Timer,
+  Wrench,
+  Palette,
+  Briefcase,
+  HeartHandshake,
+  BookOpen,
 } from "lucide-react";
 
 const API_BASE = "__PORT_5000__".startsWith("__") ? "" : "__PORT_5000__";
@@ -421,6 +428,66 @@ export default function Landing() {
                 </div>
               )}
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── AI Tools & Tutorials Preview ── */}
+      {digest && digest.aiToolGuides && digest.aiToolGuides.length > 0 && (
+        <section className="px-4 sm:px-8 py-12 sm:py-16 max-w-7xl mx-auto border-t border-border/30">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-primary/10">
+                <Lightbulb className="w-4 h-4 text-primary" />
+              </div>
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold">AI Tools & Tutorials</h2>
+                <p className="text-sm text-muted-foreground mt-0.5">Practical step-by-step guides to level up your workflow</p>
+              </div>
+            </div>
+            <button
+              onClick={() => { navigate("/dashboard"); setTimeout(() => { const tab = document.querySelector('[data-testid="tab-tools"]') as HTMLElement; if (tab) tab.click(); }, 300); }}
+              className="text-sm text-primary hover:text-primary/80 transition-colors flex items-center gap-1"
+            >
+              View all <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {digest.aiToolGuides.slice(0, 3).map((guide) => {
+              const catColors: Record<string, string> = {
+                productivity: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+                creative: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+                business: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+                personal: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+              };
+              const platformLabel: Record<string, string> = { youtube: "YouTube", reddit: "Reddit", substack: "Substack", other: "Web" };
+              return (
+                <Card key={guide.id} className="border-border/50 bg-card p-4 hover:bg-accent/30 transition-colors group">
+                  <div className="flex items-start gap-3">
+                    <div className="text-2xl shrink-0">{guide.iconEmoji}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
+                        <Badge className={`text-[9px] px-1.5 py-0 h-4 border-0 ${catColors[guide.category] || catColors.productivity}`}>
+                          {guide.category}
+                        </Badge>
+                        <span className="text-[10px] text-muted-foreground/60 flex items-center gap-0.5">
+                          <Timer className="w-2.5 h-2.5" />
+                          {guide.timeToComplete}
+                        </span>
+                      </div>
+                      <h3 className="text-sm font-semibold leading-snug mb-1">{guide.title}</h3>
+                      <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">{guide.tagline}</p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="text-[10px] text-muted-foreground/60">{platformLabel[guide.source.platform] || "Web"}</span>
+                        <span className="text-[10px] text-muted-foreground/40">-</span>
+                        <span className="text-[10px] text-muted-foreground/60">{guide.steps.length} steps</span>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              );
+            })}
           </div>
         </section>
       )}

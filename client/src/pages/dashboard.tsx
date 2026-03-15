@@ -7,7 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 // Attribution removed
-import type { DigestData, SocialMediaContent } from "@shared/schema";
+import type { DigestData, SocialMediaContent, AIToolGuide } from "@shared/schema";
 
 interface SearchResult {
   date: string;
@@ -65,6 +65,14 @@ import {
   Search,
   X,
   Home,
+  Lightbulb,
+  Wrench,
+  BookOpen,
+  ArrowRight,
+  Timer,
+  Palette,
+  Briefcase,
+  HeartHandshake,
 } from "lucide-react";
 
 /** API base for media URLs — mirrors queryClient.ts pattern */
@@ -585,6 +593,9 @@ function DigestContent({
             <TabsTrigger value="upcoming" className="text-xs h-8 px-2.5 sm:px-3" data-testid="tab-upcoming">Events</TabsTrigger>
             <TabsTrigger value="media" className="text-xs h-8 px-2.5 sm:px-3" data-testid="tab-media">Media</TabsTrigger>
             <TabsTrigger value="social" className="text-xs h-8 px-2.5 sm:px-3" data-testid="tab-social">Social</TabsTrigger>
+            <TabsTrigger value="tools" className="text-xs h-8 px-2.5 sm:px-3" data-testid="tab-tools">
+              <Lightbulb className="w-3 h-3 mr-1 inline" />Tools
+            </TabsTrigger>
           </TabsList>
         </div>
 
@@ -621,6 +632,11 @@ function DigestContent({
         {/* Social Media */}
         <TabsContent value="social" className="mt-4">
           <SocialMediaTab digest={digest} dateStr={dateStr} />
+        </TabsContent>
+
+        {/* AI Tools & Tutorials */}
+        <TabsContent value="tools" className="mt-4">
+          <AIToolsTab digest={digest} />
         </TabsContent>
       </Tabs>
     </>
@@ -1742,6 +1758,205 @@ function SocialMediaTab({ digest, dateStr }: { digest: DigestData; dateStr: stri
         </Card>
       </div>
     </>
+  );
+}
+
+// ─── Loading & Empty States ─────────────────────────────────────────────────
+
+// ─── AI Tools & Tutorials Tab ──────────────────────────────────────────────
+
+const CATEGORY_CONFIG: Record<string, { icon: React.ElementType; label: string; color: string; bg: string }> = {
+  productivity: { icon: Wrench, label: "Productivity", color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-100 dark:bg-blue-900/30" },
+  creative: { icon: Palette, label: "Creative", color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-100 dark:bg-purple-900/30" },
+  business: { icon: Briefcase, label: "Business", color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-100 dark:bg-emerald-900/30" },
+  personal: { icon: HeartHandshake, label: "Personal", color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-100 dark:bg-amber-900/30" },
+};
+
+const PLATFORM_ICONS: Record<string, { label: string; color: string }> = {
+  youtube: { label: "YouTube", color: "text-red-500" },
+  reddit: { label: "Reddit", color: "text-orange-500" },
+  substack: { label: "Substack", color: "text-orange-600" },
+  other: { label: "Web", color: "text-muted-foreground" },
+};
+
+const DIFFICULTY_COLORS: Record<string, string> = {
+  beginner: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+  intermediate: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
+  advanced: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+};
+
+function AIToolsTab({ digest }: { digest: DigestData }) {
+  const guides = digest.aiToolGuides || [];
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  if (guides.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <div className="p-4 rounded-2xl bg-muted/50 mb-4">
+          <Lightbulb className="w-8 h-8 text-muted-foreground/40" />
+        </div>
+        <h2 className="text-sm font-semibold text-foreground mb-1">No AI Tool Guides Today</h2>
+        <p className="text-xs text-muted-foreground max-w-xs">
+          AI tool tutorials are sourced daily from YouTube, Reddit, and Substack. Check back tomorrow.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Section header */}
+      <div className="flex items-center gap-2 mb-2">
+        <div className="p-1.5 rounded-lg bg-primary/10">
+          <Lightbulb className="w-4 h-4 text-primary" />
+        </div>
+        <div>
+          <h2 className="text-sm font-semibold">AI Tools & Tutorials</h2>
+          <p className="text-[11px] text-muted-foreground">Practical guides sourced from YouTube, Reddit, and Substack</p>
+        </div>
+      </div>
+
+      {/* Guide cards */}
+      {guides.map((guide) => {
+        const isExpanded = expandedId === guide.id;
+        const catConfig = CATEGORY_CONFIG[guide.category] || CATEGORY_CONFIG.productivity;
+        const CatIcon = catConfig.icon;
+        const platform = PLATFORM_ICONS[guide.source.platform] || PLATFORM_ICONS.other;
+        const diffColor = DIFFICULTY_COLORS[guide.difficulty] || DIFFICULTY_COLORS.beginner;
+
+        return (
+          <Card
+            key={guide.id}
+            className="border-border/50 bg-card overflow-hidden transition-all duration-200"
+          >
+            {/* Card header - always visible */}
+            <button
+              onClick={() => setExpandedId(isExpanded ? null : guide.id)}
+              className="w-full text-left p-4 hover:bg-accent/20 transition-colors"
+            >
+              <div className="flex items-start gap-3">
+                {/* Emoji icon */}
+                <div className="text-2xl shrink-0 mt-0.5">{guide.iconEmoji}</div>
+
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
+                    <Badge className={`text-[9px] px-1.5 py-0 h-4 ${catConfig.bg} ${catConfig.color} border-0`}>
+                      <CatIcon className="w-2.5 h-2.5 mr-0.5" />
+                      {catConfig.label}
+                    </Badge>
+                    <Badge className={`text-[9px] px-1.5 py-0 h-4 ${diffColor} border-0`}>
+                      {guide.difficulty}
+                    </Badge>
+                    <span className="text-[10px] text-muted-foreground/60 flex items-center gap-0.5">
+                      <Timer className="w-2.5 h-2.5" />
+                      {guide.timeToComplete}
+                    </span>
+                  </div>
+
+                  <h3 className="text-sm font-semibold leading-snug mb-1">{guide.title}</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{guide.tagline}</p>
+
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className={`text-[10px] font-medium ${platform.color}`}>{platform.label}</span>
+                    <span className="text-[10px] text-muted-foreground/40">-</span>
+                    <span className="text-[10px] text-muted-foreground/60">{guide.source.author}</span>
+                  </div>
+                </div>
+
+                {/* Expand indicator */}
+                <div className="shrink-0 mt-1">
+                  {isExpanded ? (
+                    <ChevronUp className="w-4 h-4 text-muted-foreground/40" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-muted-foreground/40" />
+                  )}
+                </div>
+              </div>
+            </button>
+
+            {/* Expanded content */}
+            {isExpanded && (
+              <div className="px-4 pb-4 pt-0 border-t border-border/30">
+                {/* What it is */}
+                <div className="mt-4 mb-4">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">What it is</h4>
+                  <p className="text-sm leading-relaxed">{guide.whatItIs}</p>
+                </div>
+
+                {/* Use case */}
+                <div className="mb-4 p-3 rounded-lg bg-primary/5 border border-primary/10">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-primary mb-1.5 flex items-center gap-1">
+                    <Lightbulb className="w-3 h-3" /> Use Case
+                  </h4>
+                  <p className="text-sm leading-relaxed">{guide.useCase}</p>
+                </div>
+
+                {/* Step by step */}
+                <div className="mb-4">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-1">
+                    <BookOpen className="w-3 h-3" /> Step-by-Step Guide
+                  </h4>
+                  <div className="space-y-3">
+                    {guide.steps.map((step) => (
+                      <div key={step.stepNumber} className="flex gap-3">
+                        <div className="shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                          <span className="text-[10px] font-bold text-primary">{step.stepNumber}</span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium mb-0.5">{step.title}</p>
+                          <p className="text-xs text-muted-foreground leading-relaxed">{step.detail}</p>
+                          {step.tip && (
+                            <p className="text-[11px] text-primary/80 mt-1 flex items-start gap-1">
+                              <Sparkles className="w-3 h-3 shrink-0 mt-0.5" />
+                              {step.tip}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Why it matters */}
+                <div className="mb-4 p-3 rounded-lg bg-muted/50">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">Why It Matters</h4>
+                  <p className="text-sm leading-relaxed">{guide.whyItMatters}</p>
+                </div>
+
+                {/* Pro tips */}
+                {guide.proTips && guide.proTips.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1">
+                      <Zap className="w-3 h-3" /> Pro Tips
+                    </h4>
+                    <ul className="space-y-1.5">
+                      {guide.proTips.map((tip, i) => (
+                        <li key={i} className="text-xs text-muted-foreground leading-relaxed flex items-start gap-2">
+                          <span className="text-primary mt-0.5">-</span>
+                          {tip}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Footer links */}
+                <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-border/30">
+                  {guide.toolUrl && (
+                    <ExtLink href={guide.toolUrl} className="text-xs font-medium text-primary hover:text-primary/80 flex items-center gap-1 px-3 py-1.5 rounded-md bg-primary/5 hover:bg-primary/10 transition-colors">
+                      <ArrowRight className="w-3 h-3" /> Try {guide.toolName}
+                    </ExtLink>
+                  )}
+                  <ExtLink href={guide.source.url} className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 px-3 py-1.5 rounded-md hover:bg-muted/50 transition-colors">
+                    <ExternalLink className="w-3 h-3" /> Original Source
+                  </ExtLink>
+                </div>
+              </div>
+            )}
+          </Card>
+        );
+      })}
+    </div>
   );
 }
 

@@ -33,6 +33,7 @@ export interface DigestData {
   industryMetrics: MetricEntry[];
   worldNews: WorldNewsItem[];
   socialMedia?: SocialMediaContent;
+  aiToolGuides?: AIToolGuide[];
 }
 
 export interface TopStory {
@@ -111,6 +112,38 @@ export interface WorldNewsItem {
   url?: string;
   timestamp: string;
   importance: "high" | "medium" | "low";
+}
+
+export interface AIToolGuide {
+  id: string;
+  toolName: string;           // Name of the AI tool (e.g., "Cursor", "NotebookLM")
+  title: string;              // Catchy headline for the guide
+  category: "productivity" | "creative" | "business" | "personal";
+  tagline: string;            // One-line value proposition
+  whatItIs: string;           // 2-3 sentence description of the tool
+  useCase: string;            // Specific real-world scenario
+  whyItMatters: string;       // How it makes things better for the user
+  steps: TutorialStep[];      // Step-by-step walkthrough
+  proTips?: string[];         // Optional power-user tips
+  source: ToolSource;         // Where this was discovered
+  difficulty: "beginner" | "intermediate" | "advanced";
+  timeToComplete: string;     // e.g., "10 minutes", "30 minutes"
+  toolUrl?: string;           // Link to the tool itself
+  iconEmoji: string;          // Emoji for visual identity
+}
+
+export interface TutorialStep {
+  stepNumber: number;
+  title: string;              // Short action title
+  detail: string;             // Explanation of what to do
+  tip?: string;               // Optional helpful note
+}
+
+export interface ToolSource {
+  platform: "youtube" | "reddit" | "substack" | "other";
+  author: string;
+  url: string;
+  title: string;              // Original content title
 }
 
 export interface SocialMediaContent {
