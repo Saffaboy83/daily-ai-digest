@@ -4,20 +4,27 @@ import { seedDigest, SEED_DATE } from "./seed";
 
 const DIGEST_PREFIX = "digests/";
 
+function hasBlobToken(): boolean {
+  return !!process.env.BLOB_READ_WRITE_TOKEN;
+}
+
 export async function getDigest(date: string): Promise<{ date: string; data: DigestData } | null> {
-  const key = `${DIGEST_PREFIX}${date}.json`;
-  try {
-    const blob = await head(key);
-    const res = await fetch(blob.url);
-    const data = (await res.json()) as DigestData;
-    return { date, data };
-  } catch {
-    // Blob not found — fall back to seed data
-    if (date === SEED_DATE) {
-      return { date, data: seedDigest };
+  if (hasBlobToken()) {
+    const key = `${DIGEST_PREFIX}${date}.json`;
+    try {
+      const blob = await head(key);
+      const res = await fetch(blob.url);
+      const data = (await res.json()) as DigestData;
+      return { date, data };
+    } catch {
+      // Blob not found — fall through to seed check
     }
-    return null;
   }
+  // Fall back to seed data
+  if (date === SEED_DATE) {
+    return { date, data: seedDigest };
+  }
+  return null;
 }
 
 export async function saveDigest(date: string, data: DigestData): Promise<void> {
@@ -32,16 +39,22 @@ export async function saveDigest(date: string, data: DigestData): Promise<void> 
 export async function listDigestDates(): Promise<string[]> {
   const dates = new Set<string>();
 
-  let cursor: string | undefined;
-  do {
-    const result = await list({ prefix: DIGEST_PREFIX, cursor });
-    for (const blob of result.blobs) {
-      // key looks like "digests/2026-03-14.json"
-      const name = blob.pathname.replace(DIGEST_PREFIX, "").replace(".json", "");
-      if (name) dates.add(name);
+  if (hasBlobToken()) {
+    try {
+      let cursor: string | undefined;
+      do {
+        const result = await list({ prefix: DIGEST_PREFIX, cursor });
+        for (const blob of result.blobs) {
+          // key looks like "digests/2026-03-14.json"
+          const name = blob.pathname.replace(DIGEST_PREFIX, "").replace(".json", "");
+          if (name) dates.add(name);
+        }
+        cursor = result.hasMore ? result.cursor : undefined;
+      } while (cursor);
+    } catch (err) {
+      console.error("Blob list error:", err);
     }
-    cursor = result.hasMore ? result.cursor : undefined;
-  } while (cursor);
+  }
 
   // Always include the seed date
   dates.add(SEED_DATE);
@@ -114,6 +127,7 @@ export async function searchAllDigests(query: string): Promise<SearchResult[]> {
 }
 
 export async function getMediaUrl(date: string, filename: string): Promise<string | null> {
+  if (!hasBlobToken()) return null;
   const key = `media/${date}/${filename}`;
   try {
     const blob = await head(key);
