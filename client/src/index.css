@@ -154,6 +154,28 @@
   font-variant-numeric: tabular-nums lining-nums;
 }
 
+/* Hide scrollbar for tabs on mobile */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Touch-friendly tap targets */
+@media (max-width: 640px) {
+  button, a, [role="tab"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  /* But not inline links or badges */
+  a.inline, p a, h3 a, span a {
+    min-height: unset;
+    min-width: unset;
+  }
+}
+
 /* Pulse animation for live indicator */
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; }

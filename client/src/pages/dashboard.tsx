@@ -436,28 +436,29 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-label="Daily Digest" className="shrink-0">
               <rect width="32" height="32" rx="8" fill="hsl(var(--primary))" />
               <path d="M8 10h16M8 16h12M8 22h8" stroke="hsl(var(--primary-foreground))" strokeWidth="2.5" strokeLinecap="round" />
               <circle cx="24" cy="8" r="4" fill="hsl(var(--chart-2))" />
             </svg>
-            <div>
+            <div className="min-w-0">
               <h1 className="text-sm font-semibold tracking-tight leading-none" data-testid="text-title">
                 Daily Digest
               </h1>
-              <p className="text-[11px] text-muted-foreground leading-none mt-0.5 flex items-center gap-1.5">
-                {isLatest && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse-dot inline-block" />}
-                {digest?.dateLabel || formatDateDisplay(currentDate)}
+              <p className="text-[11px] text-muted-foreground leading-none mt-0.5 flex items-center gap-1.5 truncate">
+                {isLatest && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse-dot inline-block shrink-0" />}
+                <span className="hidden sm:inline">{digest?.dateLabel || formatDateDisplay(currentDate)}</span>
+                <span className="sm:hidden">{currentDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
               </p>
             </div>
           </div>
 
           {/* Search + Date Navigation */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 shrink-0">
             <GlobalSearch onNavigate={(d) => setCurrentDate(new Date(d + "T12:00:00"))} />
-            <div className="w-px h-5 bg-border/50 mx-1" />
+            <div className="w-px h-5 bg-border/50 mx-0.5 sm:mx-1 hidden sm:block" />
             <Button
               variant="ghost"
               size="icon"
@@ -471,7 +472,7 @@ export default function Dashboard() {
             </Button>
 
             {/* Date selector */}
-            <div className="relative">
+            <div className="relative hidden sm:block">
               <select
                 value={dateStr}
                 onChange={(e) => setCurrentDate(new Date(e.target.value + "T12:00:00"))}
@@ -505,7 +506,7 @@ export default function Dashboard() {
               <ChevronRight className="w-4 h-4" />
             </Button>
 
-            <div className="w-px h-5 bg-border/50 mx-1" />
+            <div className="w-px h-5 bg-border/50 mx-0.5 sm:mx-1" />
 
             <button
               onClick={() => setIsDark(!isDark)}
@@ -531,14 +532,11 @@ export default function Dashboard() {
 
         {/* Footer */}
         <footer className="mt-8 pt-4 border-t border-border/30 pb-6">
-          <div className="flex items-center justify-between">
-            <p className="text-[10px] text-muted-foreground/50">
-              {digest
-                ? `Generated from ${digest.kpis.newsletters} newsletters, ${digest.kpis.aiStories} AI stories, and live web research. ${digest.dateLabel}.`
-                : "No digest available for this date."}
-            </p>
-
-          </div>
+          <p className="text-[10px] text-muted-foreground/50">
+            {digest
+              ? `Generated from ${digest.kpis.newsletters} newsletters, ${digest.kpis.aiStories} AI stories, and live web research. ${digest.dateLabel}.`
+              : "No digest available for this date."}
+          </p>
         </footer>
       </main>
     </div>
@@ -582,15 +580,17 @@ function DigestContent({
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="bg-muted/50 p-0.5 h-9">
-          <TabsTrigger value="overview" className="text-xs h-8 px-3" data-testid="tab-overview">Overview</TabsTrigger>
-          <TabsTrigger value="world" className="text-xs h-8 px-3" data-testid="tab-world">World News</TabsTrigger>
-          <TabsTrigger value="newsletters" className="text-xs h-8 px-3" data-testid="tab-newsletters">Newsletters</TabsTrigger>
-          <TabsTrigger value="ai" className="text-xs h-8 px-3" data-testid="tab-ai">AI Intel</TabsTrigger>
-          <TabsTrigger value="upcoming" className="text-xs h-8 px-3" data-testid="tab-upcoming">Upcoming</TabsTrigger>
-          <TabsTrigger value="media" className="text-xs h-8 px-3" data-testid="tab-media">Podcast & Media</TabsTrigger>
-          <TabsTrigger value="social" className="text-xs h-8 px-3" data-testid="tab-social">Social Media</TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0 scrollbar-hide">
+          <TabsList className="bg-muted/50 p-0.5 h-9 w-max sm:w-auto">
+            <TabsTrigger value="overview" className="text-xs h-8 px-2.5 sm:px-3" data-testid="tab-overview">Overview</TabsTrigger>
+            <TabsTrigger value="world" className="text-xs h-8 px-2.5 sm:px-3" data-testid="tab-world">World</TabsTrigger>
+            <TabsTrigger value="newsletters" className="text-xs h-8 px-2.5 sm:px-3" data-testid="tab-newsletters">Inbox</TabsTrigger>
+            <TabsTrigger value="ai" className="text-xs h-8 px-2.5 sm:px-3" data-testid="tab-ai">AI Intel</TabsTrigger>
+            <TabsTrigger value="upcoming" className="text-xs h-8 px-2.5 sm:px-3" data-testid="tab-upcoming">Events</TabsTrigger>
+            <TabsTrigger value="media" className="text-xs h-8 px-2.5 sm:px-3" data-testid="tab-media">Media</TabsTrigger>
+            <TabsTrigger value="social" className="text-xs h-8 px-2.5 sm:px-3" data-testid="tab-social">Social</TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* Overview */}
         <TabsContent value="overview" className="space-y-5 mt-4">
@@ -796,20 +796,22 @@ function NewslettersTab({ digest }: { digest: DigestData }) {
           <ExtLink
             key={i}
             href={nl.url || "#"}
-            className="px-4 py-3 flex items-center gap-4 hover:bg-accent/30 transition-colors group cursor-pointer w-full"
+            className="px-3 sm:px-4 py-3 flex items-start sm:items-center gap-3 sm:gap-4 hover:bg-accent/30 transition-colors group cursor-pointer w-full"
             data-testid={`newsletter-${i}`}
           >
-            <div className="w-20 shrink-0">
-              <span className="text-xs font-semibold text-foreground">{nl.from}</span>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-0.5">
+                <span className="text-xs font-semibold text-foreground shrink-0">{nl.from}</span>
+                <TagBadge tag={nl.tag} />
+                <span className="text-[10px] text-muted-foreground/60 shrink-0 tabular-nums ml-auto">{nl.date}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <p className="text-xs text-muted-foreground truncate">{nl.subject}</p>
+                {nl.url && (
+                  <MailOpen className="w-3 h-3 text-muted-foreground/40 group-hover:text-primary shrink-0 transition-colors" />
+                )}
+              </div>
             </div>
-            <div className="flex-1 min-w-0 flex items-center gap-2">
-              <p className="text-xs text-foreground truncate font-medium">{nl.subject}</p>
-              {nl.url && (
-                <MailOpen className="w-3 h-3 text-muted-foreground/40 group-hover:text-primary shrink-0 transition-colors" />
-              )}
-            </div>
-            <TagBadge tag={nl.tag} />
-            <span className="text-[10px] text-muted-foreground/60 shrink-0 w-12 text-right tabular-nums">{nl.date}</span>
           </ExtLink>
         ))}
       </Card>
@@ -829,7 +831,7 @@ function AIIntelTab({ digest }: { digest: DigestData }) {
 
       <Card className="border-border/50 bg-card p-4 mb-4">
         <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Competitive Landscape</h3>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {digest.competitiveLandscape.map((company) => {
             const content = (
               <>
@@ -856,7 +858,7 @@ function AIIntelTab({ digest }: { digest: DigestData }) {
 
       <Card className="border-border/50 bg-card p-4 mb-4">
         <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Industry Metrics</h3>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {digest.industryMetrics.map((m, i) => {
             const content = (
               <>
@@ -943,28 +945,26 @@ function WorldNewsTab({ digest }: { digest: DigestData }) {
             const catInfo = WORLD_CATEGORY_MAP[item.category] || WORLD_CATEGORY_MAP.Society;
             const CatIcon = catInfo.icon;
             return (
-              <Card key={i} className="p-4 border-border/50 bg-card hover:border-primary/30 transition-colors" data-testid={`card-world-${i}`}>
+              <Card key={i} className="p-3 sm:p-4 border-border/50 bg-card hover:border-primary/30 transition-colors" data-testid={`card-world-${i}`}>
                 <div className="flex items-start gap-3">
-                  <div className={`p-2 rounded-lg shrink-0 ${item.importance === "high" ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>
+                  <div className={`p-2 rounded-lg shrink-0 hidden sm:block ${item.importance === "high" ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>
                     <CatIcon className="w-4 h-4" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2">
-                      <h3 className="text-sm font-semibold leading-snug">
-                        {item.url ? (
-                          <ExtLink href={item.url} className="hover:text-primary transition-colors inline">
-                            {item.title}
-                            <ExternalLink className="w-3 h-3 inline-block ml-1 opacity-60" />
-                          </ExtLink>
-                        ) : item.title}
-                      </h3>
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        {item.importance === "high" && (
-                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0 bg-red-500/10 text-red-600 dark:text-red-400 border-0">BREAKING</Badge>
-                        )}
-                        <Badge className={`text-[10px] px-1.5 py-0 border-0 ${catInfo.color}`}>{item.category}</Badge>
-                      </div>
+                    <div className="flex flex-wrap items-center gap-1.5 mb-1">
+                      <Badge className={`text-[10px] px-1.5 py-0 border-0 ${catInfo.color}`}>{item.category}</Badge>
+                      {item.importance === "high" && (
+                        <Badge variant="secondary" className="text-[10px] px-1.5 py-0 bg-red-500/10 text-red-600 dark:text-red-400 border-0">BREAKING</Badge>
+                      )}
                     </div>
+                    <h3 className="text-sm font-semibold leading-snug">
+                      {item.url ? (
+                        <ExtLink href={item.url} className="hover:text-primary transition-colors inline">
+                          {item.title}
+                          <ExternalLink className="w-3 h-3 inline-block ml-1 opacity-60" />
+                        </ExtLink>
+                      ) : item.title}
+                    </h3>
                     <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{item.summary}</p>
                     <div className="flex items-center gap-2 mt-2">
                       <span className="text-[10px] font-medium text-muted-foreground/70">{item.source}</span>
@@ -1223,11 +1223,11 @@ function MediaTab({ dateStr }: { dateStr: string }) {
       {/* Expanded image overlay */}
       {expandedImg && (
         <div
-          className="fixed inset-0 z-[100] bg-black/80 flex items-start justify-center p-4 overflow-auto"
+          className="fixed inset-0 z-[100] bg-black/80 flex items-start justify-center p-2 sm:p-4 overflow-auto"
           onClick={() => setExpandedImg(null)}
           data-testid="overlay-expanded-image"
         >
-          <div className="relative max-w-3xl w-full mt-8" onClick={(e) => e.stopPropagation()}>
+          <div className="relative max-w-3xl w-full mt-4 sm:mt-8" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => setExpandedImg(null)}
               className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-background border border-border flex items-center justify-center text-foreground hover:bg-accent z-10"
@@ -1333,8 +1333,8 @@ function UploadToLinkedInButton({ text, pdfUrl }: { text: string; pdfUrl: string
   const current = labels[step];
 
   return (
-    <div className="bg-gradient-to-r from-[#0A66C2]/10 via-[#0A66C2]/5 to-transparent dark:from-[#0A66C2]/20 dark:via-[#0A66C2]/10 dark:to-transparent rounded-lg p-4 border border-[#0A66C2]/20">
-      <div className="flex items-center justify-between gap-3">
+    <div className="bg-gradient-to-r from-[#0A66C2]/10 via-[#0A66C2]/5 to-transparent dark:from-[#0A66C2]/20 dark:via-[#0A66C2]/10 dark:to-transparent rounded-lg p-3 sm:p-4 border border-[#0A66C2]/20">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <div className="shrink-0 p-2 rounded-lg bg-[#0A66C2] text-white">
             <Linkedin className="w-4 h-4" />
@@ -1347,13 +1347,13 @@ function UploadToLinkedInButton({ text, pdfUrl }: { text: string; pdfUrl: string
         <button
           onClick={handleUpload}
           disabled={step > 0}
-          className="shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#0A66C2] text-white text-xs font-semibold hover:bg-[#094ea0] active:scale-[0.97] transition-all shadow-sm disabled:opacity-70 disabled:cursor-wait"
+          className="shrink-0 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[#0A66C2] text-white text-xs font-semibold hover:bg-[#094ea0] active:scale-[0.97] transition-all shadow-sm disabled:opacity-70 disabled:cursor-wait w-full sm:w-auto"
           data-testid="button-upload-linkedin"
         >
           {current.icon} {current.text}
         </button>
       </div>
-      <div className="mt-3 ml-11 space-y-1">
+      <div className="mt-3 sm:ml-11 space-y-1">
         <div className="flex items-center gap-2">
           <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold ${step >= 1 ? "bg-emerald-500 text-white" : "bg-muted text-muted-foreground"}`}>1</span>
           <span className={`text-[10px] ${step >= 1 ? "text-emerald-600 dark:text-emerald-400 font-medium" : "text-muted-foreground"}`}>Paste text into LinkedIn composer (Ctrl+V / Cmd+V)</span>
@@ -1407,25 +1407,25 @@ function SocialMediaTab({ digest, dateStr }: { digest: DigestData; dateStr: stri
             className="block relative overflow-hidden group"
             data-testid="link-carousel-pdf"
           >
-            <div className="bg-gradient-to-br from-[#0A0E27] via-[#111632] to-[#1a1050] p-5 sm:p-6">
-              <div className="flex items-start justify-between">
-                <div>
+            <div className="bg-gradient-to-br from-[#0A0E27] via-[#111632] to-[#1a1050] p-4 sm:p-6">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
                     <span className="text-[10px] font-semibold text-[#7B82A8] uppercase tracking-[0.15em]">LinkedIn Carousel · 8 Slides</span>
                   </div>
-                  <h3 className="text-lg sm:text-xl font-bold text-white leading-tight mb-1.5" style={{ background: "linear-gradient(135deg, #8B7FFF, #4DD4E8)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                  <h3 className="text-base sm:text-xl font-bold text-white leading-tight mb-1.5" style={{ background: "linear-gradient(135deg, #8B7FFF, #4DD4E8)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                     The AI Race Just Entered a New Chapter
                   </h3>
-                  <p className="text-xs text-[#7B82A8] leading-relaxed max-w-md">
+                  <p className="text-[11px] sm:text-xs text-[#7B82A8] leading-relaxed max-w-md">
                     8-slide dark-themed carousel with data cards, KPI badges, and source citations. Download and upload to LinkedIn with your post.
                   </p>
                 </div>
-                <div className="shrink-0 ml-4 mt-1 p-2.5 rounded-lg bg-[#8B7FFF] text-white group-hover:bg-[#8B7FFF]/90 transition-colors">
+                <div className="shrink-0 mt-1 p-2 sm:p-2.5 rounded-lg bg-[#8B7FFF] text-white group-hover:bg-[#8B7FFF]/90 transition-colors">
                   <Download className="w-4 h-4" />
                 </div>
               </div>
-              <div className="flex items-center gap-4 mt-3">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4 mt-3">
                 {["10×", "$100M", "$50B", "77.1%", "56%"].map((v) => (
                   <span key={v} className="text-xs font-bold" style={{ background: "linear-gradient(135deg, #8B7FFF, #4DD4E8)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{v}</span>
                 ))}
@@ -1497,7 +1497,7 @@ function SocialMediaTab({ digest, dateStr }: { digest: DigestData; dateStr: stri
                 Carousel Slides ({social.linkedin.carouselSlides.length})
               </button>
               {expandedSlides && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-4 gap-2">
                   {social.linkedin.carouselSlides.map((slide) => (
                     <div
                       key={slide.slideNumber}
