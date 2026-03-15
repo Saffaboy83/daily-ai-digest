@@ -42,6 +42,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       access: "public",
       contentType: ct,
       addRandomSuffix: false,
+      allowOverwrite: true,
     });
 
     uploaded.push({ filename, url: blob.url });

@@ -33,6 +33,7 @@ export async function saveDigest(date: string, data: DigestData): Promise<void> 
     access: "public",
     contentType: "application/json",
     addRandomSuffix: false,
+    allowOverwrite: true,
   });
 }
 

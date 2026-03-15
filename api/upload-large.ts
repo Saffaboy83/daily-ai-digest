@@ -31,6 +31,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       access: "public",
       contentType,
       addRandomSuffix: false,
+      allowOverwrite: true,
     });
 
     return res.json({ success: true, filename, url: blob.url });
