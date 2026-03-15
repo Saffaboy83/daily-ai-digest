@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The AI Race Just Entered a New Chapter — AI Intelligence Brief · March 2026</title>
+<meta name="description" content="6 developments reshaping the AI landscape right now — NVIDIA GTC, Rubin, Anthropic, Meta, Cursor vs xAI, and the Reasoning + Agents era.">
+<meta property="og:title" content="The AI Race Just Entered a New Chapter">
+<meta property="og:description" content="6 developments reshaping the AI landscape right now — if you're not paying attention, you're already behind.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0A0E27;
+  --card-bg:#111632;
+  --card-border:#1E2454;
+  --text-white:#FFFFFF;
+  --text-body:#B8BDD9;
+  --text-muted:#7B82A8;
+  --purple:#8B7FFF;
+  --cyan:#4DD4E8;
+  --green:#76B947;
+  --teal:#3EDBA8;
+  --orange:#F4A836;
+  --red:#FF5C5C;
+  --lavender:#A78BFA;
+  --linkedin-blue:#0A66C2;
+  --dataviz-bg:#0D1020;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  background:var(--bg);
+  color:var(--text-body);
+  line-height:1.7;
+  font-size:17px;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* Container */
+.container{max-width:720px;margin:0 auto;padding:0 24px}
+
+/* ========== HERO ========== */
+.hero{
+  text-align:center;
+  padding:80px 24px 60px;
+  position:relative;
+  overflow:hidden;
+}
+.hero::before{
+  content:'';
+  position:absolute;
+  top:-200px;left:50%;transform:translateX(-50%);
+  width:800px;height:800px;
+  background:radial-gradient(circle,rgba(139,127,255,0.08) 0%,rgba(77,212,232,0.04) 40%,transparent 70%);
+  pointer-events:none;
+}
+.hero-label{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:12px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--text-muted);
+  border:1px solid rgba(123,130,168,0.25);
+  border-radius:100px;padding:10px 24px;
+  margin-bottom:40px;
+  position:relative;
+}
+.hero-label::before{
+  content:'';width:8px;height:8px;border-radius:50%;
+  background:var(--teal);
+  box-shadow:0 0 12px var(--teal);
+}
+.hero h1{
+  font-size:clamp(42px,8vw,76px);
+  font-weight:800;line-height:1.05;
+  letter-spacing:-0.03em;
+  background:linear-gradient(135deg,var(--purple) 0%,var(--cyan) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  margin-bottom:28px;
+  position:relative;
+}
+.hero-subtitle{
+  font-size:19px;color:var(--text-body);
+  max-width:560px;margin:0 auto 40px;
+  line-height:1.7;
+}
+.hero-buttons{
+  display:flex;gap:16px;justify-content:center;flex-wrap:wrap;
+}
+.btn-linkedin{
+  display:inline-flex;align-items:center;gap:10px;
+  background:var(--linkedin-blue);color:#fff;
+  font-size:16px;font-weight:600;
+  padding:14px 32px;border-radius:12px;border:none;
+  cursor:pointer;text-decoration:none;
+  transition:all 0.2s;
+}
+.btn-linkedin:hover{background:#004182;transform:translateY(-1px)}
+.btn-linkedin svg{width:20px;height:20px;fill:#fff}
+.btn-outline{
+  display:inline-flex;align-items:center;gap:8px;
+  background:transparent;color:var(--text-body);
+  font-size:16px;font-weight:500;
+  padding:14px 32px;border-radius:12px;
+  border:1px solid var(--card-border);
+  cursor:pointer;text-decoration:none;
+  transition:all 0.2s;
+}
+.btn-outline:hover{border-color:var(--text-muted);color:#fff}
+
+/* ========== KPI STRIP ========== */
+.kpi-strip{
+  padding:48px 24px 56px;
+  border-top:1px solid rgba(30,36,84,0.6);
+  border-bottom:1px solid rgba(30,36,84,0.6);
+}
+.kpi-grid{
+  display:flex;flex-wrap:wrap;justify-content:center;
+  gap:8px 48px;
+  max-width:720px;margin:0 auto;
+}
+.kpi-item{text-align:center;min-width:140px;padding:12px 0}
+.kpi-value{
+  font-size:clamp(36px,6vw,52px);font-weight:800;
+  background:linear-gradient(135deg,var(--purple),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  line-height:1.1;margin-bottom:6px;
+}
+.kpi-label{
+  font-size:13px;color:var(--text-muted);
+  line-height:1.4;
+}
+
+/* ========== CARDS ========== */
+.cards-section{padding:32px 0 48px}
+.card{
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  border-radius:16px;
+  padding:36px 40px;
+  margin-bottom:32px;
+  position:relative;
+  overflow:hidden;
+}
+.card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
+  border-radius:4px 0 0 4px;
+}
+.card[data-color="green"]::before{background:linear-gradient(180deg,var(--green),var(--cyan))}
+.card[data-color="teal"]::before{background:var(--teal)}
+.card[data-color="orange"]::before{background:var(--orange)}
+.card[data-color="red"]::before{background:var(--red)}
+.card[data-color="purple"]::before{background:var(--lavender)}
+.card[data-color="cyan"]::before{background:var(--cyan)}
+
+.card-header{display:flex;align-items:flex-start;gap:16px;margin-bottom:20px}
+.card-number{
+  width:48px;height:48px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;font-weight:700;color:#fff;
+  flex-shrink:0;
+}
+.card[data-color="green"] .card-number{background:linear-gradient(135deg,var(--green),var(--cyan))}
+.card[data-color="teal"] .card-number{background:linear-gradient(135deg,var(--teal),#2bb88a)}
+.card[data-color="orange"] .card-number{background:linear-gradient(135deg,var(--orange),#e8912a)}
+.card[data-color="red"] .card-number{background:linear-gradient(135deg,var(--red),#e04444)}
+.card[data-color="purple"] .card-number{background:linear-gradient(135deg,var(--lavender),var(--purple))}
+.card[data-color="cyan"] .card-number{background:linear-gradient(135deg,var(--cyan),var(--purple))}
+
+.card-meta{flex:1}
+.card-label{
+  font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;
+  margin-bottom:6px;
+  display:flex;align-items:center;gap:6px;
+}
+.card-label-dot{width:8px;height:8px;border-radius:2px;display:inline-block}
+.card[data-color="green"] .card-label{color:var(--green)}
+.card[data-color="green"] .card-label-dot{background:var(--green)}
+.card[data-color="teal"] .card-label{color:var(--teal)}
+.card[data-color="teal"] .card-label-dot{background:var(--teal)}
+.card[data-color="orange"] .card-label{color:var(--orange)}
+.card[data-color="orange"] .card-label-dot{background:var(--orange)}
+.card[data-color="red"] .card-label{color:var(--red)}
+.card[data-color="red"] .card-label-dot{background:var(--red)}
+.card[data-color="purple"] .card-label{color:var(--lavender)}
+.card[data-color="purple"] .card-label-dot{background:var(--lavender)}
+.card[data-color="cyan"] .card-label{color:var(--cyan)}
+.card[data-color="cyan"] .card-label-dot{background:var(--cyan)}
+
+.card-title{
+  font-size:24px;font-weight:700;color:var(--text-white);
+  line-height:1.3;
+}
+.card-body{margin-bottom:20px}
+.card-body p{margin-bottom:12px}
+.card-body strong{color:var(--text-white);font-weight:600}
+.card-body ul{list-style:none;padding:0}
+.card-body ul li{
+  position:relative;padding-left:20px;margin-bottom:14px;
+}
+.card-body ul li::before{
+  content:'•';position:absolute;left:0;
+  color:var(--text-muted);font-size:20px;line-height:1.5;
+}
+
+/* Accent text within card body */
+.accent-teal{color:var(--cyan)}
+.accent-orange{color:var(--orange)}
+.accent-red{color:var(--red)}
+.accent-purple{color:var(--lavender)}
+.accent-green{color:var(--teal)}
+
+/* Code-style inline text */
+.code-inline{
+  font-family:'SF Mono','Fira Code',monospace;
+  font-size:14px;
+  background:rgba(77,212,232,0.1);
+  color:var(--cyan);
+  padding:2px 8px;border-radius:4px;
+}
+
+/* Metric pills */
+.metric-pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.metric-pill{
+  display:inline-flex;align-items:center;
+  font-size:13px;font-weight:500;
+  padding:6px 14px;border-radius:100px;
+  border:1px solid transparent;
+}
+.card[data-color="teal"] .metric-pill{
+  background:rgba(62,219,168,0.12);color:var(--teal);border-color:rgba(62,219,168,0.2);
+}
+.card[data-color="orange"] .metric-pill{
+  background:rgba(244,168,54,0.12);color:var(--orange);border-color:rgba(244,168,54,0.2);
+}
+.card[data-color="red"] .metric-pill{
+  background:rgba(255,92,92,0.12);color:var(--red);border-color:rgba(255,92,92,0.2);
+}
+.card[data-color="purple"] .metric-pill{
+  background:rgba(167,139,250,0.12);color:var(--lavender);border-color:rgba(167,139,250,0.2);
+}
+.card[data-color="cyan"] .metric-pill{
+  background:rgba(77,212,232,0.12);color:var(--cyan);border-color:rgba(77,212,232,0.2);
+}
+
+/* Source links */
+.source-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.source-link{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:13px;color:var(--text-muted);
+  padding:6px 14px;border-radius:100px;
+  border:1px solid var(--card-border);
+  text-decoration:none;
+  transition:all 0.2s;
+}
+.source-link:hover{border-color:var(--text-muted);color:var(--text-body)}
+.source-link svg{width:12px;height:12px;stroke:currentColor;fill:none}
+
+/* ========== DATA VIZ ========== */
+.dataviz{
+  background:var(--dataviz-bg);
+  border:1px solid var(--card-border);
+  border-radius:12px;
+  padding:28px;
+  margin:24px 0;
+}
+.dataviz-header{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:20px;
+}
+.dataviz-icon{
+  width:40px;height:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;
+}
+.dataviz-icon.green{background:linear-gradient(135deg,var(--teal),#1a9e6e)}
+.dataviz-icon.openai{background:linear-gradient(135deg,#10a37f,#0d8c6b)}
+.dataviz-icon.gemini{background:linear-gradient(135deg,var(--cyan),#3aa8c0)}
+.dataviz-title{font-size:16px;font-weight:700;color:var(--text-white)}
+.dataviz-subtitle{font-size:13px;color:var(--teal)}
+
+/* Specs table */
+.specs-table{width:100%}
+.specs-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 0;
+  border-bottom:1px solid rgba(30,36,84,0.5);
+}
+.specs-row:last-child{border-bottom:none}
+.specs-label{font-size:15px;color:var(--text-body)}
+.specs-value{
+  display:flex;align-items:center;gap:10px;
+  font-size:15px;font-weight:700;color:var(--text-white);
+}
+.multiplier-badge{
+  display:inline-flex;align-items:center;
+  font-size:12px;font-weight:600;
+  padding:3px 10px;border-radius:100px;
+  background:rgba(62,219,168,0.15);color:var(--teal);
+}
+
+/* Callout box */
+.callout{
+  background:linear-gradient(135deg,rgba(62,219,168,0.08),rgba(77,212,232,0.05));
+  border-left:3px solid var(--teal);
+  border-radius:8px;
+  padding:18px 20px;
+  margin:20px 0 16px;
+}
+.callout-big{
+  font-size:32px;font-weight:800;color:var(--teal);
+  line-height:1.1;margin-bottom:4px;
+}
+.callout-text{font-size:14px;color:var(--text-body)}
+.callout-text strong{color:var(--text-white)}
+
+/* Callout for chart sections */
+.chart-callout{
+  background:linear-gradient(135deg,rgba(77,212,232,0.08),rgba(139,127,255,0.05));
+  border-left:3px solid var(--cyan);
+  border-radius:8px;
+  padding:16px 20px;
+  margin:20px 0 16px;
+}
+.chart-callout p{font-size:14px;color:var(--text-body);margin:0}
+.chart-callout strong{color:var(--text-white)}
+
+.gemini-callout{
+  background:linear-gradient(135deg,rgba(77,212,232,0.08),rgba(62,219,168,0.05));
+  border-left:3px solid var(--cyan);
+  border-radius:8px;
+  padding:16px 20px;
+  margin:20px 0 16px;
+}
+.gemini-callout p{font-size:14px;color:var(--text-body);margin:0}
+.gemini-callout strong{color:var(--text-white)}
+
+/* Bar chart */
+.bar-chart{margin:16px 0}
+.bar-item{margin-bottom:16px}
+.bar-label-row{
+  display:flex;justify-content:space-between;align-items:baseline;
+  margin-bottom:6px;
+}
+.bar-label{font-size:14px;color:var(--text-body)}
+.bar-value{font-size:20px;font-weight:700;color:var(--cyan)}
+.bar-track{
+  width:100%;height:10px;background:rgba(30,36,84,0.8);
+  border-radius:6px;overflow:hidden;
+}
+.bar-fill{
+  height:100%;border-radius:6px;
+  transition:width 0.6s ease-out;
+}
+.bar-fill.teal{background:linear-gradient(90deg,var(--teal),var(--cyan))}
+.bar-fill.purple{background:linear-gradient(90deg,var(--purple),var(--lavender))}
+
+.dataviz-source{
+  display:flex;align-items:center;gap:6px;
+  font-size:12px;color:var(--text-muted);
+  margin-top:16px;
+}
+.dataviz-source svg{width:12px;height:12px;stroke:currentColor;fill:none}
+
+/* ========== PATTERN SECTION ========== */
+.pattern-divider{
+  border:none;
+  border-top:1px solid var(--card-border);
+  margin:48px auto;
+  max-width:720px;
+}
+.pattern-section{
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  border-radius:16px;
+  padding:48px 40px;
+  margin-bottom:40px;
+}
+.pattern-label{
+  font-size:12px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--text-muted);
+  margin-bottom:24px;
+  display:flex;align-items:center;gap:12px;
+}
+.pattern-label::before{content:'——';color:var(--text-muted)}
+.pattern-statement{
+  font-size:clamp(28px,4.5vw,38px);font-weight:800;
+  color:var(--text-white);line-height:1.25;
+  margin-bottom:28px;
+}
+.pattern-body{
+  font-size:17px;line-height:1.8;
+  color:var(--text-body);margin-bottom:28px;
+}
+.pattern-body strong{color:var(--text-white)}
+
+.theme-pills{display:flex;flex-wrap:wrap;gap:10px}
+.theme-pill{
+  display:inline-flex;align-items:center;
+  font-size:14px;font-weight:500;
+  padding:8px 18px;border-radius:100px;
+  background:rgba(139,127,255,0.1);
+  color:var(--lavender);
+  border:1px solid rgba(139,127,255,0.2);
+}
+
+/* ========== YOUR TURN ========== */
+.your-turn{
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  border-radius:16px;
+  padding:40px;
+  margin-bottom:48px;
+}
+.your-turn h2{
+  font-size:28px;font-weight:700;color:var(--text-white);
+  margin-bottom:16px;
+}
+.your-turn p{
+  font-size:17px;color:var(--text-body);
+  margin-bottom:24px;line-height:1.7;
+}
+.topic-pills{display:flex;flex-wrap:wrap;gap:10px}
+.topic-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:14px;font-weight:500;color:var(--text-body);
+  padding:10px 18px;border-radius:100px;
+  border:1px solid var(--card-border);
+  background:transparent;cursor:pointer;
+  transition:all 0.2s;
+}
+.topic-pill:hover{border-color:var(--lavender);color:var(--lavender)}
+.topic-pill .pill-num{
+  width:24px;height:24px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--purple),var(--cyan));
+}
+
+/* ========== FOOTER ========== */
+.footer{
+  text-align:center;padding:32px 24px 48px;
+}
+.hashtags{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:8px 16px;
+  margin-bottom:32px;
+}
+.hashtag{font-size:14px;color:var(--lavender);font-weight:500}
+.footer-divider{
+  border:none;border-top:1px solid var(--card-border);
+  margin:24px auto;max-width:720px;
+}
+.footer-attribution{
+  font-size:13px;color:var(--text-muted);font-style:italic;
+}
+.footer-attribution a{color:var(--text-muted);text-decoration:none}
+.footer-attribution a:hover{color:var(--text-body)}
+
+/* ========== MOBILE ========== */
+@media(max-width:640px){
+  .hero{padding:60px 20px 40px}
+  .hero h1{font-size:36px}
+  .hero-subtitle{font-size:16px}
+  .hero-buttons{flex-direction:column;align-items:center}
+  .btn-linkedin,.btn-outline{width:100%;justify-content:center;max-width:300px}
+  .kpi-grid{gap:4px 24px}
+  .kpi-item{min-width:120px}
+  .kpi-value{font-size:32px}
+  .card{padding:28px 24px}
+  .card-title{font-size:20px}
+  .card-number{width:40px;height:40px;font-size:17px}
+  .dataviz{padding:20px}
+  .pattern-section{padding:32px 24px}
+  .pattern-statement{font-size:24px}
+  .your-turn{padding:28px 24px}
+  .specs-value{font-size:13px}
+  .specs-label{font-size:13px}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-label">AI INTELLIGENCE BRIEF · MARCH 2026</div>
+  <h1>The AI Race Just Entered a New Chapter</h1>
+  <p class="hero-subtitle">6 developments reshaping the landscape right now — if you're not paying attention, you're already behind.</p>
+  <div class="hero-buttons">
+    <a class="btn-linkedin" href="https://www.linkedin.com/sharing/share-offsite/?url=" target="_blank" rel="noopener noreferrer" id="shareBtn">
+      <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      Share on LinkedIn
+    </a>
+    <a class="btn-outline" href="#card-1">Read the Breakdown ↓</a>
+  </div>
+</section>
+
+<!-- ===== KPI STRIP ===== -->
+<section class="kpi-strip">
+  <div class="kpi-grid">
+    <div class="kpi-item">
+      <div class="kpi-value">10×</div>
+      <div class="kpi-label">Rubin inference cost reduction</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-value">$100M</div>
+      <div class="kpi-label">Anthropic Partner Network</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-value">$50B</div>
+      <div class="kpi-label">Cursor target valuation</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-value">77.1%</div>
+      <div class="kpi-label">Gemini 3.1 Pro on ARC-AGI-2</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-value">56%</div>
+      <div class="kpi-label">GPT-5.4 citations → brand sites</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CARD 1: NVIDIA GTC ===== -->
+<section class="cards-section">
+<div class="container">
+
+<div class="card" data-color="green" id="card-1">
+  <div class="card-header">
+    <div class="card-number">1</div>
+    <div class="card-meta">
+      <div class="card-label"><span class="card-label-dot"></span> NVIDIA · GTC 2026</div>
+      <h2 class="card-title">The "AI Factory" Era Begins at GTC</h2>
+    </div>
+  </div>
+  <div class="card-body">
+    <p>Jensen Huang's keynote kicks off <strong>Monday, March 16 at 11 a.m. PT / 2 p.m. ET</strong> at SAP Center in San Jose. Expect the next wave of infrastructure announcements framed around industrial-scale AI compute buildouts — what NVIDIA is now calling the "AI factory" model.</p>
+  </div>
+  <div class="source-links">
+    <a class="source-link" href="https://www.nvidia.com/gtc/" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      nvidia.com/gtc
+    </a>
+    <a class="source-link" href="https://techcrunch.com" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      TechCrunch
+    </a>
+    <a class="source-link" href="https://blogs.nvidia.com" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      NVIDIA Blog
+    </a>
+  </div>
+</div>
+
+<!-- ===== CARD 2: RUBIN ===== -->
+<div class="card" data-color="teal" id="card-2">
+  <div class="card-header">
+    <div class="card-number">2</div>
+    <div class="card-meta">
+      <div class="card-label"><span class="card-label-dot"></span> NVIDIA · RUBIN PLATFORM</div>
+      <h2 class="card-title">Rubin Signals a Generational Inference Shift</h2>
+    </div>
+  </div>
+  <div class="card-body">
+    <p>NVIDIA is positioning Rubin specifically around <strong>agentic + reasoning workloads</strong> — with a headline claim of up to <span class="accent-green">10× lower inference cost per token</span> vs Blackwell.</p>
+  </div>
+  <div class="metric-pills">
+    <span class="metric-pill">10× lower inference cost/token</span>
+    <span class="metric-pill">336B transistors</span>
+    <span class="metric-pill">HBM4 memory</span>
+    <span class="metric-pill">up to 288 GB/GPU</span>
+    <span class="metric-pill">22 TB/s bandwidth</span>
+  </div>
+
+  <!-- Rubin specs data viz -->
+  <div class="dataviz">
+    <div class="dataviz-header">
+      <div class="dataviz-icon green">⚡</div>
+      <div>
+        <div class="dataviz-title">NVIDIA Rubin GPU</div>
+        <div class="dataviz-subtitle">Built for the next generation of AI</div>
+      </div>
+    </div>
+    <div class="specs-table">
+      <div class="specs-row">
+        <span class="specs-label">NVFP4 Inference</span>
+        <span class="specs-value">50 PFLOPS <span class="multiplier-badge">5× Blackwell</span></span>
+      </div>
+      <div class="specs-row">
+        <span class="specs-label">NVFP4 Training</span>
+        <span class="specs-value">35 PFLOPS <span class="multiplier-badge">3.5×</span></span>
+      </div>
+      <div class="specs-row">
+        <span class="specs-label">HBM4 Bandwidth</span>
+        <span class="specs-value">22 TB/s <span class="multiplier-badge">2.8×</span></span>
+      </div>
+      <div class="specs-row">
+        <span class="specs-label">NVLink Bandwidth / GPU</span>
+        <span class="specs-value">3.6 TB/s <span class="multiplier-badge">2×</span></span>
+      </div>
+      <div class="specs-row">
+        <span class="specs-label">Transistors</span>
+        <span class="specs-value">336 Billion <span class="multiplier-badge">1.6×</span></span>
+      </div>
+    </div>
+    <div class="callout">
+      <div class="callout-big">10×</div>
+      <div class="callout-text"><strong>Lower inference cost per token</strong><br>vs Blackwell · agentic + reasoning workloads</div>
+    </div>
+    <div class="dataviz-source">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Source: nvidianews.nvidia.com · developer.nvidia.com · siliconangle.com
+    </div>
+  </div>
+
+  <div class="source-links">
+    <a class="source-link" href="https://nvidianews.nvidia.com" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      NVIDIA Newsroom
+    </a>
+    <a class="source-link" href="https://developer.nvidia.com" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      NVIDIA Developer Blog
+    </a>
+    <a class="source-link" href="https://siliconangle.com" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      SiliconAngle
+    </a>
+  </div>
+</div>
+
+<!-- ===== CARD 3: ANTHROPIC ===== -->
+<div class="card" data-color="orange" id="card-3">
+  <div class="card-header">
+    <div class="card-number">3</div>
+    <div class="card-meta">
+      <div class="card-label"><span class="card-label-dot"></span> ANTHROPIC · CLAUDE</div>
+      <h2 class="card-title">Anthropic Goes All-In on Enterprise Adoption</h2>
+    </div>
+  </div>
+  <div class="card-body">
+    <p>Anthropic launched the <strong>Claude Partner Network</strong> with an initial <span class="accent-orange">$100M commitment</span> for 2026 and introduced <strong>Claude Certified Architect, Foundations</strong>. Anchor partners include Accenture, Deloitte, Cognizant, and Infosys — all four of the world's largest system integrators. This is the enterprise distribution play.</p>
+  </div>
+  <div class="metric-pills">
+    <span class="metric-pill">$100M commitment</span>
+    <span class="metric-pill">Claude Partner Network</span>
+    <span class="metric-pill">4 anchor SI partners</span>
+  </div>
+  <div class="source-links">
+    <a class="source-link" href="https://thenextweb.com" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      The Next Web
+    </a>
+    <a class="source-link" href="https://www.tipranks.com" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      TipRanks
+    </a>
+    <a class="source-link" href="https://www.investing.com" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Investing.com
+    </a>
+  </div>
+</div>
+
+<!-- ===== CARD 4: META ===== -->
+<div class="card" data-color="red" id="card-4">
+  <div class="card-header">
+    <div class="card-number">4</div>
+    <div class="card-meta">
+      <div class="card-label"><span class="card-label-dot"></span> META · AVOCADO</div>
+      <h2 class="card-title">Meta Hits Turbulence: "Avocado" Reportedly Delayed</h2>
+    </div>
+  </div>
+  <div class="card-body">
+    <p>Reuters reports Meta postponed <strong>"Avocado"</strong> to at least May–June amid competitive pressure. CNET reports it fell short in internal tests on reasoning, coding, and writing vs rivals. A rare public stumble in what has been a fast-moving product cadence from Meta AI.</p>
+  </div>
+  <div class="metric-pills">
+    <span class="metric-pill">Delayed to May–June</span>
+    <span class="metric-pill">Failed internal benchmarks</span>
+  </div>
+  <div class="source-links">
+    <a class="source-link" href="https://www.reuters.com" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Reuters
+    </a>
+    <a class="source-link" href="https://www.cnet.com" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      CNET
+    </a>
+    <a class="source-link" href="https://www.nytimes.com" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      New York Times
+    </a>
+  </div>
+</div>
+
+<!-- ===== CARD 5: CURSOR vs xAI ===== -->
+<div class="card" data-color="purple" id="card-5">
+  <div class="card-header">
+    <div class="card-number">5</div>
+    <div class="card-meta">
+      <div class="card-label"><span class="card-label-dot"></span> CURSOR · xAI</div>
+      <h2 class="card-title">Cursor vs xAI: Developer Tools Are the New Battleground</h2>
+    </div>
+  </div>
+  <div class="card-body">
+    <ul>
+      <li>Cursor is reportedly in talks for a funding round valuing it around <span class="accent-purple">$50 billion</span> — nearly double its late-2025 $29B valuation</li>
+      <li>xAI/SpaceX hired <strong>Andrew Milich</strong> and <strong>Jason Ginsberg</strong> — Cursor's product engineering leads — to rebuild Grok's coding capabilities from scratch</li>
+      <li>The talent move says everything. Developer workflow is where the daily stickiness war is being fought.</li>
+    </ul>
+  </div>
+  <div class="metric-pills">
+    <span class="metric-pill">$50B target valuation</span>
+    <span class="metric-pill">xAI rebuilding from scratch</span>
+  </div>
+  <div class="source-links">
+    <a class="source-link" href="https://www.bloomberg.com" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Bloomberg
+    </a>
+    <a class="source-link" href="https://www.theinformation.com" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      The Information
+    </a>
+    <a class="source-link" href="https://techcrunch.com" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      TechCrunch
+    </a>
+    <a class="source-link" href="https://www.cnbc.com" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      CNBC
+    </a>
+  </div>
+</div>
+
+<!-- ===== CARD 6: OPENAI / GOOGLE ===== -->
+<div class="card" data-color="cyan" id="card-6">
+  <div class="card-header">
+    <div class="card-number">6</div>
+    <div class="card-meta">
+      <div class="card-label"><span class="card-label-dot"></span> OPENAI · GOOGLE · WRITESONIC</div>
+      <h2 class="card-title">The "Reasoning + Agents" Era Accelerates — and Changes Distribution</h2>
+    </div>
+  </div>
+  <div class="card-body">
+    <ul>
+      <li>OpenAI introduced <strong>GPT-5.4</strong>, rolling out across ChatGPT/Codex and available in the API (<span class="code-inline">gpt-5.4</span> + <span class="code-inline">gpt-5.4-pro</span>), with native computer-use capabilities</li>
+      <li>Writesonic's study: <span class="accent-teal">56% of GPT-5.4 citations go to brand websites</span> vs just 8% for GPT-5.3 — based on 119 conversations / 1,161 citations. The citation layer is shifting fast</li>
+      <li>Google reports Gemini 3.1 Pro hit a verified <span class="accent-teal">77.1% on ARC-AGI-2</span> (ARC Prize Verified) — more than doubling its predecessor, tied to the "Deep Think" line of work</li>
+    </ul>
+  </div>
+  <div class="metric-pills">
+    <span class="metric-pill">GPT-5.4 native computer-use</span>
+    <span class="metric-pill">56% brand citations (↑ from 8%)</span>
+    <span class="metric-pill">Gemini 77.1% ARC-AGI-2</span>
+  </div>
+
+  <!-- GPT-5.4 Citation Chart -->
+  <div class="dataviz">
+    <div class="dataviz-header">
+      <div class="dataviz-icon openai">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M6 12h12"/></svg>
+      </div>
+      <div>
+        <div class="dataviz-title">GPT-5.4 vs GPT-5.3 — Citation Behavior</div>
+        <div class="dataviz-subtitle">119 conversations · 1,161 citations analyzed</div>
+      </div>
+    </div>
+    <div class="bar-chart">
+      <div class="bar-item">
+        <div class="bar-label-row">
+          <span class="bar-label">GPT-5.4 → Brand websites</span>
+          <span class="bar-value">56%</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill teal" style="width:56%"></div>
+        </div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label-row">
+          <span class="bar-label">GPT-5.3 → Brand websites</span>
+          <span class="bar-value">8%</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill teal" style="width:8%"></div>
+        </div>
+      </div>
+    </div>
+    <div class="chart-callout">
+      <p>GPT-5.4 cites brand websites <strong style="color:var(--teal)">7× more often</strong> than GPT-5.3. The AI citation layer is becoming a primary surface for brand exposure — your SEO strategy needs to account for this now.</p>
+    </div>
+    <div class="dataviz-source">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Source: writesonic.com/blog/chatgpt-citation-study-gpt-5-4-vs-gpt-5-3
+    </div>
+  </div>
+
+  <!-- Gemini Benchmark Chart -->
+  <div class="dataviz">
+    <div class="dataviz-header">
+      <div class="dataviz-icon gemini">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <div>
+        <div class="dataviz-title">Gemini 3.1 Pro — Benchmark Results</div>
+        <div class="dataviz-subtitle" style="color:var(--cyan)">ARC Prize Verified · February 2026</div>
+      </div>
+    </div>
+    <div class="bar-chart">
+      <div class="bar-item">
+        <div class="bar-label-row">
+          <span class="bar-label">ARC-AGI-2 (verified) — 3.1 Pro</span>
+          <span class="bar-value">77.1%</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill teal" style="width:77.1%"></div>
+        </div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label-row">
+          <span class="bar-label">ARC-AGI-2 — Gemini 3 Pro (previous gen)</span>
+          <span class="bar-value" style="color:var(--text-muted)">31.1%</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill teal" style="width:31.1%"></div>
+        </div>
+      </div>
+    </div>
+    <div class="gemini-callout">
+      <p>☑️ <strong>ARC Prize Verified</strong> — Score independently confirmed. 3.1 Pro more than doubles its predecessor on this benchmark, powered by the "Deep Think" reasoning line.</p>
+    </div>
+    <div class="dataviz-source">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Source: blog.google · deepmind.google/models/gemini-3-1-pro
+    </div>
+  </div>
+
+  <div class="source-links">
+    <a class="source-link" href="https://openai.com" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      OpenAI
+    </a>
+    <a class="source-link" href="https://writesonic.com" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Writesonic Study
+    </a>
+    <a class="source-link" href="https://blog.google" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Google Blog
+    </a>
+    <a class="source-link" href="https://deepmind.google" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Model Card
+    </a>
+    <a class="source-link" href="https://venturebeat.com" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      VentureBeat
+    </a>
+  </div>
+</div>
+
+</div><!-- .container -->
+</section>
+
+<!-- ===== PATTERN ===== -->
+<div class="container">
+<hr class="pattern-divider">
+
+<div class="pattern-section">
+  <div class="pattern-label">THE PATTERN</div>
+  <h2 class="pattern-statement">The companies investing hardest in agents, reasoning, and developer workflows are pulling ahead.</h2>
+  <p class="pattern-body">Infrastructure cost curves are collapsing (<strong style="color:var(--teal)">Rubin: 10× per-token</strong>). Enterprise distribution is being locked up (<strong style="color:var(--teal)">Claude Partner Network</strong>). The citation and discovery layer is already shifting — AI is becoming a primary surface for brand exposure, with GPT-5.4 sending <strong style="color:var(--teal)">56% of citations to brand sites</strong>. And the developer tooling war just escalated with both a $50B valuation and a talent raid.</p>
+  <div class="theme-pills">
+    <span class="theme-pill">Agentic Infrastructure</span>
+    <span class="theme-pill">Developer Tooling</span>
+    <span class="theme-pill">Enterprise Distribution</span>
+    <span class="theme-pill">AI-driven Discovery</span>
+    <span class="theme-pill">Reasoning Models</span>
+    <span class="theme-pill">Inference Economics</span>
+  </div>
+</div>
+
+<!-- ===== YOUR TURN ===== -->
+<div class="your-turn">
+  <h2>💬 Your Turn</h2>
+  <p>Which of these 6 developments changes your strategy the most in the next 90 days — and why?</p>
+  <div class="topic-pills">
+    <button class="topic-pill"><span class="pill-num">1</span> NVIDIA GTC</button>
+    <button class="topic-pill"><span class="pill-num">2</span> Rubin 10×</button>
+    <button class="topic-pill"><span class="pill-num">3</span> Anthropic $100M</button>
+    <button class="topic-pill"><span class="pill-num">4</span> Meta stumble</button>
+    <button class="topic-pill"><span class="pill-num">5</span> Cursor vs xAI</button>
+    <button class="topic-pill"><span class="pill-num">6</span> Agents era</button>
+  </div>
+</div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="hashtags">
+    <span class="hashtag">#AI</span>
+    <span class="hashtag">#ArtificialIntelligence</span>
+    <span class="hashtag">#NVIDIAGTC</span>
+    <span class="hashtag">#NVIDIA</span>
+    <span class="hashtag">#Claude</span>
+    <span class="hashtag">#Anthropic</span>
+    <span class="hashtag">#Meta</span>
+    <span class="hashtag">#Cursor</span>
+    <span class="hashtag">#OpenAI</span>
+    <span class="hashtag">#Gemini</span>
+    <span class="hashtag">#AIAgents</span>
+    <span class="hashtag">#DevTools</span>
+  </div>
+  <hr class="footer-divider">
+  <p class="footer-attribution">
+    <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Built with Perplexity Computer</a> · March 2026
+  </p>
+</footer>
+
+<script>
+// Share on LinkedIn
+document.getElementById('shareBtn').addEventListener('click', function(e) {
+  e.preventDefault();
+  const text = encodeURIComponent("The AI Race Just Entered a New Chapter 🚀\n\n6 developments reshaping the landscape right now:\n\n1️⃣ NVIDIA GTC 2026 — The \"AI Factory\" era begins\n2️⃣ Rubin — 10× lower inference cost per token\n3️⃣ Anthropic — $100M Claude Partner Network\n4️⃣ Meta — \"Avocado\" reportedly delayed\n5️⃣ Cursor vs xAI — $50B valuation + talent raid\n6️⃣ GPT-5.4 + Gemini 3.1 Pro — Reasoning era accelerates\n\nWhich one changes your strategy the most?\n\n#AI #ArtificialIntelligence #NVIDIAGTC #NVIDIA #Claude #Anthropic #Meta #Cursor #OpenAI #Gemini #AIAgents #DevTools");
+  const url = encodeURIComponent(window.location.href);
+  window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank', 'width=600,height=600');
+});
+
+// Smooth scroll for "Read the Breakdown" button
+document.querySelector('.btn-outline').addEventListener('click', function(e) {
+  e.preventDefault();
+  document.getElementById('card-1').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+</script>
+
+</body>
+</html>
