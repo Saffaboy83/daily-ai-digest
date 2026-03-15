@@ -387,23 +387,33 @@ export default function Dashboard() {
     window.matchMedia("(prefers-color-scheme: dark)").matches
   );
   const [activeTab, setActiveTab] = useState("overview");
-  const [currentDate, setCurrentDate] = useState(new Date(2026, 2, 14)); // Mar 14, 2026
+  const [currentDate, setCurrentDate] = useState<Date | null>(null);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", isDark);
   }, [isDark]);
 
-  const dateStr = formatDateForApi(currentDate);
-
   // Fetch available dates
   const { data: datesData } = useQuery<{ dates: string[] }>({
     queryKey: ["/api/digests"],
   });
-  const availableDates = datesData?.dates || [];
+  const availableDates = (datesData?.dates || []).filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d));
+
+  // Auto-select latest available date on first load
+  useEffect(() => {
+    if (!currentDate && availableDates.length > 0) {
+      const latest = availableDates[0];
+      const [y, m, d] = latest.split("-").map(Number);
+      setCurrentDate(new Date(y, m - 1, d));
+    }
+  }, [availableDates, currentDate]);
+
+  const dateStr = currentDate ? formatDateForApi(currentDate) : "";
 
   // Fetch digest for current date
   const { data: digestResponse, isLoading, error } = useQuery<{ date: string; data: DigestData }>({
     queryKey: ["/api/digest", dateStr],
+    enabled: !!dateStr,
   });
   const digest = digestResponse?.data;
 
@@ -442,8 +452,8 @@ export default function Dashboard() {
               </h1>
               <p className="text-[11px] text-muted-foreground leading-none mt-0.5 flex items-center gap-1.5 truncate">
                 {isLatest && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse-dot inline-block shrink-0" />}
-                <span className="hidden sm:inline">{digest?.dateLabel || formatDateDisplay(currentDate)}</span>
-                <span className="sm:hidden">{currentDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
+                <span className="hidden sm:inline">{digest?.dateLabel || (currentDate ? formatDateDisplay(currentDate) : "Loading...")}</span>
+                <span className="sm:hidden">{currentDate ? currentDate.toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "..."}</span>
               </p>
             </div>
           </div>
@@ -480,7 +490,7 @@ export default function Dashboard() {
                   ))
                 ) : (
                   <option value={dateStr}>
-                    {currentDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                    {currentDate ? currentDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Loading..."}
                   </option>
                 )}
               </select>
@@ -529,7 +539,7 @@ export default function Dashboard() {
         {isLoading ? (
           <LoadingSkeleton />
         ) : error || !digest ? (
-          <EmptyState date={formatDateDisplay(currentDate)} />
+          <EmptyState date={currentDate ? formatDateDisplay(currentDate) : ""} />
         ) : (
           <DigestContent digest={digest} activeTab={activeTab} setActiveTab={setActiveTab} dateStr={dateStr} />
         )}
@@ -911,23 +921,29 @@ function AIIntelTab({ digest }: { digest: DigestData }) {
       <Card className="border-border/50 bg-card p-4 mb-4">
         <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Competitive Landscape</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {digest.competitiveLandscape.map((company) => {
+          {digest.competitiveLandscape.map((raw: any) => {
+            const companyName = raw.name || raw.company || "Unknown";
+            const move = raw.move || raw.latestMove || "";
+            const sentiment = raw.sentiment || raw.position || "";
+            const threatLevel = raw.threat || "";
+            const colorClass = raw.colorClass || (threatLevel === "high" ? "border-red-500" : threatLevel === "medium" ? "border-yellow-500" : "border-emerald-500");
+            const url = raw.url || "";
             const content = (
               <>
                 <div className="text-xs font-bold flex items-center gap-1">
-                  {company.name}
-                  {company.url && <ExternalLink className="w-2.5 h-2.5 opacity-50" />}
+                  {companyName}
+                  {url && <ExternalLink className="w-2.5 h-2.5 opacity-50" />}
                 </div>
-                <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">{company.move}</p>
-                <Badge variant="outline" className="text-[9px] px-1 py-0 mt-1.5 border-border/60">{company.sentiment}</Badge>
+                <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">{move}</p>
+                <Badge variant="outline" className="text-[9px] px-1 py-0 mt-1.5 border-border/60">{sentiment}</Badge>
               </>
             );
-            return company.url ? (
-              <ExtLink key={company.name} href={company.url} className={`border-l-2 ${company.colorClass} pl-3 py-1 hover:bg-accent/30 rounded-r transition-colors`}>
+            return url ? (
+              <ExtLink key={companyName} href={url} className={`border-l-2 ${colorClass} pl-3 py-1 hover:bg-accent/30 rounded-r transition-colors`}>
                 {content}
               </ExtLink>
             ) : (
-              <div key={company.name} className={`border-l-2 ${company.colorClass} pl-3 py-1`}>
+              <div key={companyName} className={`border-l-2 ${colorClass} pl-3 py-1`}>
                 {content}
               </div>
             );
@@ -1465,9 +1481,23 @@ function SocialMediaTab({ digest, dateStr }: { digest: DigestData; dateStr: stri
     );
   }
 
+  // Normalize twitter thread: handle both `thread` (string[]) and `threadTweets` (object[] with order/text)
+  const twitterThread: string[] = (() => {
+    const tw = social.twitter as any;
+    if (Array.isArray(tw.thread) && tw.thread.length > 0) {
+      return typeof tw.thread[0] === "string" ? tw.thread : tw.thread.map((t: any) => t.text || "");
+    }
+    if (Array.isArray(tw.threadTweets) && tw.threadTweets.length > 0) {
+      return tw.threadTweets
+        .sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
+        .map((t: any) => t.text || "");
+    }
+    return [];
+  })();
+
   const fullLinkedIn = `${social.linkedin.hook}\n\n${social.linkedin.body}\n\n${social.linkedin.cta}\n\n${social.linkedin.hashtags.join(" ")}`;
-  const fullTwitterThread = [social.twitter.mainTweet, ...social.twitter.thread].join("\n\n---\n\n");
-  const fullYTScript = `Title: ${social.youtubeShort.title}\n\n${social.youtubeShort.script}\n\nCaptions:\n${social.youtubeShort.captions.map((c, i) => `${i + 1}. ${c}`).join("\n")}`;
+  const fullTwitterThread = [social.twitter.mainTweet, ...twitterThread].join("\n\n---\n\n");
+  const fullYTScript = `Title: ${social.youtubeShort.title}\n\n${social.youtubeShort.script}\n\nCaptions:\n${social.youtubeShort.captions.map((c: any, i: number) => `${i + 1}. ${c}`).join("\n")}`;
 
   return (
     <>
@@ -1606,7 +1636,7 @@ function SocialMediaTab({ digest, dateStr }: { digest: DigestData; dateStr: stri
               </div>
               <div>
                 <h3 className="text-sm font-semibold">X (Twitter) Thread</h3>
-                <p className="text-[10px] text-muted-foreground">E.H.A. framework · {social.twitter.thread.length + 1} tweets · Optimized for reach</p>
+                <p className="text-[10px] text-muted-foreground">E.H.A. framework · {twitterThread.length + 1} tweets · Optimized for reach</p>
               </div>
             </div>
             <CopyButton text={fullTwitterThread} label="twitter" />
@@ -1630,11 +1660,11 @@ function SocialMediaTab({ digest, dateStr }: { digest: DigestData; dateStr: stri
                 data-testid="button-toggle-thread"
               >
                 {expandedThread ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                Thread ({social.twitter.thread.length} tweets)
+                Thread ({twitterThread.length} tweets)
               </button>
               {expandedThread && (
                 <div className="space-y-2 ml-3 border-l-2 border-border/50 pl-4">
-                  {social.twitter.thread.map((tweet, i) => (
+                  {twitterThread.map((tweet, i) => (
                     <div key={i} className="bg-muted/30 rounded-lg p-3" data-testid={`tweet-${i + 1}`}>
                       <div className="flex items-center justify-between mb-1.5">
                         <span className="text-[10px] text-muted-foreground font-mono">Tweet {i + 2}</span>

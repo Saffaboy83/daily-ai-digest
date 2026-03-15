@@ -165,7 +165,9 @@ export default function Landing() {
   const { data: datesData } = useQuery<{ dates: string[] }>({
     queryKey: ["/api/digests"],
   });
-  const latestDate = datesData?.dates?.[0];
+  // Filter to only valid YYYY-MM-DD dates (exclude test entries like "2026-03-15-test")
+  const validDates = (datesData?.dates || []).filter((d: string) => /^\d{4}-\d{2}-\d{2}$/.test(d));
+  const latestDate = validDates[0];
 
   // Fetch the latest digest
   const { data: digestResponse, isLoading } = useQuery<{ date: string; data: DigestData }>({
