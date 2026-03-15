@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +17,12 @@ import {
   Moon,
   ExternalLink,
   Headphones,
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  LayoutDashboard,
+  X,
 } from "lucide-react";
 
 const API_BASE = "__PORT_5000__".startsWith("__") ? "" : "__PORT_5000__";
@@ -33,15 +39,115 @@ const iconMap: Record<string, any> = {
   cpu: Cpu, zap: Zap, sparkles: Sparkles, alert: Zap, rocket: Zap, building: TrendingUp,
 };
 
+/* ── Inline Audio Player ── */
+function AudioPlayer({ src }: { src: string }) {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [isMuted, setIsMuted] = useState(false);
+
+  const togglePlay = () => {
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  const handleTimeUpdate = () => {
+    if (!audioRef.current) return;
+    const cur = audioRef.current.currentTime;
+    const dur = audioRef.current.duration || 0;
+    setCurrentTime(cur);
+    setDuration(dur);
+    setProgress(dur > 0 ? (cur / dur) * 100 : 0);
+  };
+
+  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!audioRef.current) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    audioRef.current.currentTime = pct * (audioRef.current.duration || 0);
+  };
+
+  const fmt = (s: number) => {
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return `${m}:${sec.toString().padStart(2, "0")}`;
+  };
+
+  return (
+    <div className="flex items-center gap-3 w-full">
+      <audio
+        ref={audioRef}
+        src={src}
+        preload="metadata"
+        onTimeUpdate={handleTimeUpdate}
+        onLoadedMetadata={handleTimeUpdate}
+        onEnded={() => setIsPlaying(false)}
+      />
+      <button
+        onClick={togglePlay}
+        className="w-10 h-10 rounded-full bg-white text-gray-900 flex items-center justify-center hover:bg-gray-100 transition-colors shrink-0 shadow-lg"
+        aria-label={isPlaying ? "Pause" : "Play"}
+      >
+        {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
+      </button>
+      <div className="flex-1 min-w-0">
+        <div
+          className="h-1.5 bg-white/20 rounded-full cursor-pointer group relative"
+          onClick={handleSeek}
+        >
+          <div
+            className="h-full bg-white rounded-full relative transition-all"
+            style={{ width: `${progress}%` }}
+          >
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow opacity-0 group-hover:opacity-100 transition-opacity" />
+          </div>
+        </div>
+        <div className="flex justify-between mt-1">
+          <span className="text-[10px] text-white/50 tabular-nums">{fmt(currentTime)}</span>
+          <span className="text-[10px] text-white/50 tabular-nums">{duration > 0 ? fmt(duration) : "--:--"}</span>
+        </div>
+      </div>
+      <button
+        onClick={() => {
+          if (audioRef.current) audioRef.current.muted = !isMuted;
+          setIsMuted(!isMuted);
+        }}
+        className="p-1.5 text-white/60 hover:text-white transition-colors shrink-0"
+        aria-label={isMuted ? "Unmute" : "Mute"}
+      >
+        {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+      </button>
+    </div>
+  );
+}
+
 export default function Landing() {
   const [, navigate] = useLocation();
   const [isDark, setIsDark] = useState(false);
+  const [expandedImg, setExpandedImg] = useState<string | null>(null);
 
   useEffect(() => {
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     setIsDark(prefersDark);
     document.documentElement.classList.toggle("dark", prefersDark);
   }, []);
+
+  // Lock body scroll when lightbox is open
+  useEffect(() => {
+    if (expandedImg) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [expandedImg]);
 
   const toggleTheme = () => {
     setIsDark(!isDark);
@@ -149,17 +255,22 @@ export default function Landing() {
                 onClick={goToDashboard}
                 className="px-6 py-2.5 bg-white text-gray-900 rounded-lg text-sm font-semibold hover:bg-gray-100 transition-colors flex items-center gap-2"
               >
-                Open Dashboard <ArrowRight className="w-4 h-4" />
+                <LayoutDashboard className="w-4 h-4" /> Open Dashboard
               </button>
-              {hasPodcast && (
-                <ExtLink
-                  href={podcastUrl}
-                  className="px-6 py-2.5 bg-white/10 text-white border border-white/20 rounded-lg text-sm font-medium hover:bg-white/20 transition-colors flex items-center gap-2 backdrop-blur-sm"
-                >
-                  <Headphones className="w-4 h-4" /> Listen to Today's Podcast
-                </ExtLink>
-              )}
             </div>
+
+            {/* Inline podcast player */}
+            {hasPodcast && (
+              <div className="mt-6 max-w-md">
+                <div className="flex items-center gap-2 mb-2">
+                  <Headphones className="w-4 h-4 text-white/70" />
+                  <span className="text-xs font-medium text-white/70 uppercase tracking-wider">Today's Podcast</span>
+                </div>
+                <div className="bg-white/10 backdrop-blur-md rounded-xl px-4 py-3 border border-white/15">
+                  <AudioPlayer src={podcastUrl} />
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -244,57 +355,70 @@ export default function Landing() {
 
       {/* ── Infographics Section ── */}
       {(hasOverview || hasWorldNews || hasNewsletters) && (
-        <section className="px-4 sm:px-8 py-12 sm:py-16 max-w-7xl mx-auto bg-muted/30 -mx-4 sm:-mx-8 px-4 sm:px-8" style={{ margin: "0 calc(-50vw + 50%)", padding: "3rem calc(50vw - 50%)" }}>
-          <div className="max-w-7xl mx-auto">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-xl sm:text-2xl font-bold">Daily Infographics</h2>
-                <p className="text-sm text-muted-foreground mt-1">Visual intelligence summaries for {digest?.dateLabel || "today"}</p>
-              </div>
+        <section className="py-12 sm:py-16 bg-muted/30" style={{ margin: "0 calc(-50vw + 50%)", padding: "3rem calc(50vw - 50%)" }}>
+          <div className="max-w-5xl mx-auto px-4 sm:px-8">
+            <div className="text-center mb-8">
+              <h2 className="text-xl sm:text-2xl font-bold">Daily Infographics</h2>
+              <p className="text-sm text-muted-foreground mt-1">Visual intelligence summaries for {digest?.dateLabel || "today"} - click to expand</p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 max-w-4xl mx-auto">
               {hasOverview && (
-                <Card className="border-border/50 bg-card overflow-hidden group">
-                  <ExtLink href={overviewUrl}>
-                    <div className="relative">
-                      <img src={overviewUrl} alt="AI Tech Overview" className="w-full h-auto" loading="lazy" />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                <div
+                  className="group cursor-pointer rounded-xl overflow-hidden border border-border/50 bg-card shadow-sm hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
+                  onClick={() => setExpandedImg(overviewUrl)}
+                >
+                  <div className="relative aspect-video overflow-hidden">
+                    <img src={overviewUrl} alt="AI Tech Overview" className="w-full h-full object-cover" loading="lazy" />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
+                        <ArrowRight className="w-4 h-4 text-gray-900 rotate-[-45deg]" />
+                      </div>
                     </div>
-                    <div className="p-3">
-                      <h3 className="text-sm font-semibold">AI Tech Overview</h3>
-                      <p className="text-[11px] text-muted-foreground mt-0.5">Key AI developments and benchmarks</p>
-                    </div>
-                  </ExtLink>
-                </Card>
+                  </div>
+                  <div className="p-3 text-center">
+                    <h3 className="text-sm font-semibold">AI Tech Overview</h3>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">Key AI developments and benchmarks</p>
+                  </div>
+                </div>
               )}
               {hasWorldNews && (
-                <Card className="border-border/50 bg-card overflow-hidden group">
-                  <ExtLink href={worldNewsUrl}>
-                    <div className="relative">
-                      <img src={worldNewsUrl} alt="World News" className="w-full h-auto" loading="lazy" />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                <div
+                  className="group cursor-pointer rounded-xl overflow-hidden border border-border/50 bg-card shadow-sm hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
+                  onClick={() => setExpandedImg(worldNewsUrl)}
+                >
+                  <div className="relative aspect-video overflow-hidden">
+                    <img src={worldNewsUrl} alt="World News" className="w-full h-full object-cover" loading="lazy" />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
+                        <ArrowRight className="w-4 h-4 text-gray-900 rotate-[-45deg]" />
+                      </div>
                     </div>
-                    <div className="p-3">
-                      <h3 className="text-sm font-semibold">World News</h3>
-                      <p className="text-[11px] text-muted-foreground mt-0.5">Global events and geopolitical updates</p>
-                    </div>
-                  </ExtLink>
-                </Card>
+                  </div>
+                  <div className="p-3 text-center">
+                    <h3 className="text-sm font-semibold">World News</h3>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">Global events and geopolitical updates</p>
+                  </div>
+                </div>
               )}
               {hasNewsletters && (
-                <Card className="border-border/50 bg-card overflow-hidden group">
-                  <ExtLink href={newslettersUrl}>
-                    <div className="relative">
-                      <img src={newslettersUrl} alt="Daily Overview" className="w-full h-auto" loading="lazy" />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                <div
+                  className="group cursor-pointer rounded-xl overflow-hidden border border-border/50 bg-card shadow-sm hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
+                  onClick={() => setExpandedImg(newslettersUrl)}
+                >
+                  <div className="relative aspect-video overflow-hidden">
+                    <img src={newslettersUrl} alt="Daily Overview" className="w-full h-full object-cover" loading="lazy" />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
+                        <ArrowRight className="w-4 h-4 text-gray-900 rotate-[-45deg]" />
+                      </div>
                     </div>
-                    <div className="p-3">
-                      <h3 className="text-sm font-semibold">Daily Overview</h3>
-                      <p className="text-[11px] text-muted-foreground mt-0.5">Newsletter highlights and market pulse</p>
-                    </div>
-                  </ExtLink>
-                </Card>
+                  </div>
+                  <div className="p-3 text-center">
+                    <h3 className="text-sm font-semibold">Daily Overview</h3>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">Newsletter highlights and market pulse</p>
+                  </div>
+                </div>
               )}
             </div>
           </div>
@@ -429,11 +553,46 @@ export default function Landing() {
       </section>
 
       {/* ── Footer ── */}
-      <footer className="px-4 sm:px-8 py-6 border-t border-border/30 text-center">
-        <p className="text-[11px] text-muted-foreground/50">
-          Koda Community - Daily AI Intelligence
-        </p>
+      <footer className="px-4 sm:px-8 py-6 border-t border-border/30">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-[11px] text-muted-foreground/50">
+            Koda Community - Daily AI Intelligence
+          </p>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => navigate("/")}
+              className="text-[11px] text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+            >
+              Home
+            </button>
+            <button
+              onClick={goToDashboard}
+              className="text-[11px] text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+            >
+              Dashboard
+            </button>
+          </div>
+        </div>
       </footer>
+
+      {/* ── Lightbox overlay for infographic expansion ── */}
+      {expandedImg && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-start justify-center p-2 sm:p-4 overflow-auto"
+          onClick={() => setExpandedImg(null)}
+        >
+          <div className="relative max-w-4xl w-full mt-4 sm:mt-8 animate-in fade-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setExpandedImg(null)}
+              className="absolute -top-3 -right-3 w-9 h-9 rounded-full bg-background border border-border flex items-center justify-center text-foreground hover:bg-accent z-10 shadow-lg transition-colors"
+              aria-label="Close expanded image"
+            >
+              <X className="w-4 h-4" />
+            </button>
+            <img src={expandedImg} alt="Expanded infographic" className="w-full h-auto rounded-lg shadow-2xl" />
+          </div>
+        </div>
+      )}
 
       {/* Loading skeleton */}
       {isLoading && !digest && (

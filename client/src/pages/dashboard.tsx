@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -63,6 +64,7 @@ import {
   ChevronUp,
   Search,
   X,
+  Home,
 } from "lucide-react";
 
 /** API base for media URLs — mirrors queryClient.ts pattern */
@@ -372,6 +374,7 @@ function GlobalSearch({
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export default function Dashboard() {
+  const [, navigate] = useLocation();
   const [isDark, setIsDark] = useState(() =>
     window.matchMedia("(prefers-color-scheme: dark)").matches
   );
@@ -497,6 +500,17 @@ export default function Dashboard() {
               data-testid="button-theme-toggle"
             >
               {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+
+            <div className="w-px h-5 bg-border/50 mx-0.5 sm:mx-1" />
+
+            <button
+              onClick={() => navigate("/")}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
+              aria-label="Go to homepage"
+            >
+              <Home className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Home</span>
             </button>
           </div>
         </div>
