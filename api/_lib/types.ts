@@ -49,6 +49,13 @@ export interface Newsletter {
   tag: string;
   url?: string;
   emailId?: string;
+  summary?: string[];
+  extractedLinks?: ExtractedLink[];
+}
+
+export interface ExtractedLink {
+  title: string;
+  url: string;
 }
 
 export interface UpcomingEvent {

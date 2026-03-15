@@ -784,36 +784,103 @@ function OverviewTab({ digest }: { digest: DigestData }) {
 // ─── Newsletters Tab ────────────────────────────────────────────────────────
 
 function NewslettersTab({ digest }: { digest: DigestData }) {
+  const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
+  const hasSummaries = digest.newsletters.some(nl => nl.summary && nl.summary.length > 0);
+
   return (
     <>
       <div className="flex items-center gap-2 mb-3">
         <Mail className="w-4 h-4 text-primary" />
         <h2 className="text-sm font-semibold">Inbox Digest</h2>
         <Badge variant="secondary" className="text-[10px] ml-1 border-0">{digest.newsletters.length} newsletters</Badge>
+        {hasSummaries && (
+          <Badge variant="outline" className="text-[9px] ml-1 border-primary/30 text-primary">AI Summaries</Badge>
+        )}
       </div>
       <Card className="border-border/50 bg-card divide-y divide-border/30">
-        {digest.newsletters.map((nl, i) => (
-          <ExtLink
-            key={i}
-            href={nl.url || "#"}
-            className="px-3 sm:px-4 py-3 flex items-start sm:items-center gap-3 sm:gap-4 hover:bg-accent/30 transition-colors group cursor-pointer w-full"
-            data-testid={`newsletter-${i}`}
-          >
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-0.5">
-                <span className="text-xs font-semibold text-foreground shrink-0">{nl.from}</span>
-                <TagBadge tag={nl.tag} />
-                <span className="text-[10px] text-muted-foreground/60 shrink-0 tabular-nums ml-auto">{nl.date}</span>
+        {digest.newsletters.map((nl, i) => {
+          const isExpanded = expandedIdx === i;
+          const hasSummary = nl.summary && nl.summary.length > 0;
+          const hasLinks = nl.extractedLinks && nl.extractedLinks.length > 0;
+          const isExpandable = hasSummary || hasLinks;
+
+          return (
+            <div key={i} data-testid={`newsletter-${i}`}>
+              <div
+                className={`px-3 sm:px-4 py-3 flex items-start sm:items-center gap-3 sm:gap-4 hover:bg-accent/30 transition-colors group cursor-pointer w-full ${
+                  isExpanded ? "bg-accent/20" : ""
+                }`}
+                onClick={() => isExpandable && setExpandedIdx(isExpanded ? null : i)}
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className="text-xs font-semibold text-foreground shrink-0">{nl.from}</span>
+                    <TagBadge tag={nl.tag} />
+                    <span className="text-[10px] text-muted-foreground/60 shrink-0 tabular-nums ml-auto">{nl.date}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-xs text-muted-foreground truncate">{nl.subject}</p>
+                    {isExpandable && (
+                      isExpanded
+                        ? <ChevronUp className="w-3 h-3 text-muted-foreground/40 shrink-0 transition-colors" />
+                        : <ChevronDown className="w-3 h-3 text-muted-foreground/40 shrink-0 transition-colors" />
+                    )}
+                    {!isExpandable && nl.url && (
+                      <MailOpen className="w-3 h-3 text-muted-foreground/40 group-hover:text-primary shrink-0 transition-colors" />
+                    )}
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-1.5">
-                <p className="text-xs text-muted-foreground truncate">{nl.subject}</p>
-                {nl.url && (
-                  <MailOpen className="w-3 h-3 text-muted-foreground/40 group-hover:text-primary shrink-0 transition-colors" />
-                )}
-              </div>
+
+              {/* Expanded summary + links */}
+              {isExpanded && (
+                <div className="px-3 sm:px-4 pb-3 pt-0 bg-accent/10 border-t border-border/20">
+                  {hasSummary && (
+                    <div className="mt-2">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">Key Takeaways</p>
+                      <ul className="space-y-1">
+                        {nl.summary!.map((bullet, bi) => (
+                          <li key={bi} className="text-xs text-foreground/80 leading-relaxed flex gap-2">
+                            <span className="text-primary mt-0.5 shrink-0">-</span>
+                            <span>{bullet}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {hasLinks && (
+                    <div className={hasSummary ? "mt-3" : "mt-2"}>
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">Referenced Articles</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {nl.extractedLinks!.map((link, li) => (
+                          <ExtLink
+                            key={li}
+                            href={link.url}
+                            className="inline-flex items-center gap-1 text-[11px] text-primary hover:text-primary/80 bg-primary/5 hover:bg-primary/10 px-2 py-1 rounded-md transition-colors"
+                          >
+                            <ExternalLink className="w-2.5 h-2.5 shrink-0" />
+                            <span className="truncate max-w-[200px] sm:max-w-[300px]">{link.title}</span>
+                          </ExtLink>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {nl.url && (
+                    <div className="mt-2 pt-2 border-t border-border/20">
+                      <ExtLink
+                        href={nl.url}
+                        className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        <MailOpen className="w-3 h-3" />
+                        <span>Open in Gmail</span>
+                      </ExtLink>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
-          </ExtLink>
-        ))}
+          );
+        })}
       </Card>
     </>
   );

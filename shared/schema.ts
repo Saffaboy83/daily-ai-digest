@@ -62,6 +62,13 @@ export interface Newsletter {
   tag: string;
   url?: string; // Gmail web link
   emailId?: string;
+  summary?: string[]; // 2-3 bullet point summary of the newsletter content
+  extractedLinks?: ExtractedLink[]; // Key article links found inside the newsletter
+}
+
+export interface ExtractedLink {
+  title: string;
+  url: string;
 }
 
 export interface UpcomingEvent {

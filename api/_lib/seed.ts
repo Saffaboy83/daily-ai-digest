@@ -123,12 +123,24 @@ export const seedDigest: DigestData = {
     },
   ],
   newsletters: [
-    { from: "Superhuman", subject: "Chinese robot gets 'arrested'", date: "Mar 14", tag: "AI/Robotics", emailId: "19ced17eae132fd4", url: "https://mail.google.com/mail/u/0/#inbox/19ced17eae132fd4" },
+    { from: "Superhuman", subject: "Chinese robot gets 'arrested'", date: "Mar 14", tag: "AI/Robotics", emailId: "19ced17eae132fd4", url: "https://mail.google.com/mail/u/0/#inbox/19ced17eae132fd4",
+      summary: ["A humanoid robot in China was detained by police after wandering unsupervised through a shopping district, sparking debate about robot autonomy regulations", "Google's Gemini 3.1 scored 77.1% on ARC-AGI-2, more than doubling its previous benchmark", "Anthropic's Claude now generates interactive charts and diagrams directly in conversations"],
+      extractedLinks: [{title: "Chinese Robot Detained by Police", url: "https://www.theverge.com/2026/3/14/chinese-robot-detained"}, {title: "Gemini 3.1 Pro Benchmarks", url: "https://blog.google/technology/ai/gemini-3-1-pro/"}]
+    },
     { from: "Dify", subject: "Dify Raises $30M, Human Input Node, Template Marketplace", date: "Mar 14", tag: "AI Tools", emailId: "19ceb0b283b6145b", url: "https://mail.google.com/mail/u/0/#inbox/19ceb0b283b6145b" },
-    { from: "TLDR AI", subject: "Claude Visuals, xAI poaches Cursor leads, CursorBench", date: "Mar 13", tag: "AI", emailId: "19ce771c44d1aada", url: "https://mail.google.com/mail/u/0/#inbox/19ce771c44d1aada" },
+    { from: "TLDR AI", subject: "Claude Visuals, xAI poaches Cursor leads, CursorBench", date: "Mar 13", tag: "AI", emailId: "19ce771c44d1aada", url: "https://mail.google.com/mail/u/0/#inbox/19ce771c44d1aada",
+      summary: ["Anthropic launches Claude Visuals (beta) - generate custom charts, diagrams, and interactive visualizations in chat", "xAI is aggressively recruiting Cursor's leadership team as Cursor eyes a $50B valuation", "CursorBench released as a benchmark for AI code editors, testing real-world development tasks"],
+      extractedLinks: [{title: "Claude Visuals Announcement", url: "https://www.anthropic.com/news/claude-visuals"}, {title: "Cursor $50B Valuation", url: "https://tldr.tech/ai/2026-03-13"}, {title: "CursorBench", url: "https://cursorbench.com"}]
+    },
     { from: "Superhuman", subject: "Claude builds interactive charts & diagrams", date: "Mar 13", tag: "AI", emailId: "19ce7522183d415f", url: "https://mail.google.com/mail/u/0/#inbox/19ce7522183d415f" },
-    { from: "The Rundown AI", subject: "Google brings Gemini to the road", date: "Mar 13", tag: "AI", emailId: "19ce6af32e3fb084", url: "https://mail.google.com/mail/u/0/#inbox/19ce6af32e3fb084" },
-    { from: "TLDR", subject: "Meta's AI flop, Google Maps redesign, Perplexity Agent API", date: "Mar 13", tag: "Tech", emailId: "19ce6bc754a1f6e0", url: "https://mail.google.com/mail/u/0/#inbox/19ce6bc754a1f6e0" },
+    { from: "The Rundown AI", subject: "Google brings Gemini to the road", date: "Mar 13", tag: "AI", emailId: "19ce6af32e3fb084", url: "https://mail.google.com/mail/u/0/#inbox/19ce6af32e3fb084",
+      summary: ["Google integrating Gemini AI into Android Auto and Google Maps for conversational driving assistance", "NVIDIA GTC 2026 preview - Jensen Huang expected to unveil Vera Rubin architecture on Monday", "Enterprise AI agent adoption reaches 68.1%, with SQL and DevOps use cases leading"],
+      extractedLinks: [{title: "Gemini in Android Auto", url: "https://blog.google/products/android/gemini-android-auto/"}, {title: "NVIDIA GTC 2026 Preview", url: "https://www.nvidia.com/gtc/"}]
+    },
+    { from: "TLDR", subject: "Meta's AI flop, Google Maps redesign, Perplexity Agent API", date: "Mar 13", tag: "Tech", emailId: "19ce6bc754a1f6e0", url: "https://mail.google.com/mail/u/0/#inbox/19ce6bc754a1f6e0",
+      summary: ["Meta's 'Avocado' AI model failed internal tests for reasoning, coding, and writing - release delayed from March to at least May", "Google Maps getting a major AI-powered redesign with new 'Ask Maps' natural language feature", "Perplexity launches Agent API enabling developers to build autonomous research workflows"],
+      extractedLinks: [{title: "Meta Avocado Delayed", url: "https://www.nytimes.com/2026/03/12/technology/meta-avocado-ai-model-delayed.html"}, {title: "Google Maps Redesign", url: "https://blog.google/products/maps/google-maps-redesign-2026/"}]
+    },
     { from: "TAAFT", subject: "Alexa Now Curses and Roasts You", date: "Mar 13", tag: "AI", emailId: "19ce8e8c5d6e5bcc", url: "https://mail.google.com/mail/u/0/#inbox/19ce8e8c5d6e5bcc" },
     { from: "Langfuse", subject: "Product Update: Langfuse just got faster!", date: "Mar 13", tag: "DevTools", emailId: "19ce81569bfc16ff", url: "https://mail.google.com/mail/u/0/#inbox/19ce81569bfc16ff" },
     { from: "TLDR Dev", subject: "Vimeo's subtitle trick, AI for better code, teachable AI agents", date: "Mar 13", tag: "Dev", emailId: "19ce6e5a1d311045", url: "https://mail.google.com/mail/u/0/#inbox/19ce6e5a1d311045" },
