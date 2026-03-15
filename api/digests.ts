@@ -13,7 +13,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const dates = await listDigestDates();
+    const allDates = await listDigestDates();
+    // Filter: only valid YYYY-MM-DD format, no future dates, no test entries
+    const today = new Date().toISOString().split("T")[0];
+    const dates = allDates.filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d) && d <= today);
     return res.json({ dates });
   } catch (err: any) {
     console.error("listDigestDates error:", err);

@@ -1497,7 +1497,11 @@ function SocialMediaTab({ digest, dateStr }: { digest: DigestData; dateStr: stri
 
   const fullLinkedIn = `${social.linkedin.hook}\n\n${social.linkedin.body}\n\n${social.linkedin.cta}\n\n${social.linkedin.hashtags.join(" ")}`;
   const fullTwitterThread = [social.twitter.mainTweet, ...twitterThread].join("\n\n---\n\n");
-  const fullYTScript = `Title: ${social.youtubeShort.title}\n\n${social.youtubeShort.script}\n\nCaptions:\n${social.youtubeShort.captions.map((c: any, i: number) => `${i + 1}. ${c}`).join("\n")}`;
+  // Normalize YouTube captions: handle both string[] and object[] with {time, text}
+  const ytCaptions: string[] = (social.youtubeShort?.captions || []).map((c: any) =>
+    typeof c === "string" ? c : c.text || ""
+  );
+  const fullYTScript = `Title: ${social.youtubeShort.title}\n\n${social.youtubeShort.script}\n\nCaptions:\n${ytCaptions.map((c, i) => `${i + 1}. ${c}`).join("\n")}`;
 
   return (
     <>
@@ -1607,20 +1611,25 @@ function SocialMediaTab({ digest, dateStr }: { digest: DigestData; dateStr: stri
               </button>
               {expandedSlides && (
                 <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-4 gap-2">
-                  {social.linkedin.carouselSlides.map((slide) => (
-                    <div
-                      key={slide.slideNumber}
-                      className="bg-gradient-to-br from-[#0A66C2]/10 to-[#0A66C2]/5 dark:from-[#0A66C2]/20 dark:to-[#0A66C2]/10 rounded-lg p-3 border border-[#0A66C2]/15 flex flex-col"
-                      data-testid={`carousel-slide-${slide.slideNumber}`}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-[10px] text-muted-foreground font-mono">#{slide.slideNumber}</span>
-                        {slide.emoji && <span className="text-base">{slide.emoji}</span>}
+                  {social.linkedin.carouselSlides.map((raw: any, idx: number) => {
+                    const num = raw.slideNumber || raw.slide || idx + 1;
+                    const body = raw.body || raw.subtext || "";
+                    const emoji = raw.emoji || "";
+                    return (
+                      <div
+                        key={num}
+                        className="bg-gradient-to-br from-[#0A66C2]/10 to-[#0A66C2]/5 dark:from-[#0A66C2]/20 dark:to-[#0A66C2]/10 rounded-lg p-3 border border-[#0A66C2]/15 flex flex-col"
+                        data-testid={`carousel-slide-${num}`}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-[10px] text-muted-foreground font-mono">#{num}</span>
+                          {emoji && <span className="text-base">{emoji}</span>}
+                        </div>
+                        <h4 className="text-xs font-bold leading-snug mb-1">{raw.headline}</h4>
+                        <p className="text-[10px] text-muted-foreground leading-relaxed flex-1">{body}</p>
                       </div>
-                      <h4 className="text-xs font-bold leading-snug mb-1">{slide.headline}</h4>
-                      <p className="text-[10px] text-muted-foreground leading-relaxed flex-1">{slide.body}</p>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -1746,7 +1755,7 @@ function SocialMediaTab({ digest, dateStr }: { digest: DigestData; dateStr: stri
                 <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Caption Overlay Sequence</span>
               </div>
               <div className="flex flex-wrap gap-1.5">
-                {social.youtubeShort.captions.map((caption, i) => (
+                {ytCaptions.map((caption, i) => (
                   <Badge key={i} className="text-[10px] px-2 py-0.5 border-0 bg-foreground/5 dark:bg-foreground/10 text-foreground/80">
                     {i + 1}. {caption}
                   </Badge>
