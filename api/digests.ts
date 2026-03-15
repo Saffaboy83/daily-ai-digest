@@ -12,6 +12,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const dates = await listDigestDates();
-  return res.json({ dates });
+  try {
+    const dates = await listDigestDates();
+    return res.json({ dates });
+  } catch (err: any) {
+    console.error("listDigestDates error:", err);
+    return res.status(500).json({ error: err.message, stack: err.stack });
+  }
 }
