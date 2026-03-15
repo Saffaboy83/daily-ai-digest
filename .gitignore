@@ -4,7 +4,7 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
-media/
+/media/
 
 assets/hero-images/
 infographics/
