@@ -470,7 +470,7 @@ The question isn't whether AI will transform your industry — it's whether you'
         "5/ GPT-5.4 is now live in production\n\n• Native agency capabilities\n• \"Thinking\" and \"Pro\" modes\n• 56% of citations link to brand sites\n\nThis changes SEO and how businesses interact with AI forever.",
         "6/ Google Gemini 3.1 Pro scores 77.1% on ARC-AGI-2\n\nMore than doubled previous version.\n\n\"Deep Think\" architecture for structured reasoning + complex tool use.\n\nGoogle is not out of the race.",
         "The pattern is unmistakable:\n\n→ Agents > chatbots\n→ Developer tools = king\n→ Enterprise adoption at 68.1%\n→ Hardware is the bottleneck\n→ Scale alone doesn't win\n\nThe companies building for reasoning + agency are pulling ahead.",
-        "Follow for daily AI intelligence.\n\nLike this thread? ♻️ Repost to share.\n\nFull daily digest with podcast + infographics: https://www.perplexity.ai/computer/a/daily-digest-dashboard-TEU9p3YITjqhjk8IKsbG1Q",
+        "Follow for daily AI intelligence.\n\nLike this thread? ♻️ Repost to share.\n\nFull daily digest with podcast + infographics: https://www.koda.community",
       ],
       hashtags: ["#AI", "#NVIDIAGTC", "#GPT5", "#Gemini", "#TechNews"],
     },

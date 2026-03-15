@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PerplexityAttribution } from "@/components/PerplexityAttribution";
+// Attribution removed
 import type { DigestData, SocialMediaContent } from "@shared/schema";
 
 interface SearchResult {
@@ -537,7 +537,7 @@ export default function Dashboard() {
                 ? `Generated from ${digest.kpis.newsletters} newsletters, ${digest.kpis.aiStories} AI stories, and live web research. ${digest.dateLabel}.`
                 : "No digest available for this date."}
             </p>
-            <PerplexityAttribution />
+
           </div>
         </footer>
       </main>
