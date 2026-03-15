@@ -69,31 +69,13 @@ import {
 const API_BASE = "__PORT_5000__".startsWith("__") ? "" : "__PORT_5000__";
 
 /**
- * Detect once at startup whether popups are allowed.
- * If blocked (sandboxed iframe without allow-popups), links fall back to
- * target="_top" which navigates the parent frame.
- */
-const CAN_POPUP = (() => {
-  try {
-    const w = window.open("", "", "width=1,height=1");
-    if (w) { w.close(); return true; }
-    return false;
-  } catch { return false; }
-})();
-
-/**
- * Reusable link component that opens URLs in a new tab when possible,
- * falling back to top-frame navigation in sandboxed iframes.
- *
- * On desktop / contexts where popups work: opens a new tab (target="_blank").
- * On mobile / sandboxed iframes: navigates the parent page (target="_top");
- * the user can press the browser back button to return to the dashboard.
+ * Reusable link component that always opens URLs in a new tab.
  */
 function ExtLink({ href, className, children, ...rest }: { href: string; className?: string; children: React.ReactNode; [key: string]: any }) {
   return (
     <a
       href={href}
-      target={CAN_POPUP ? "_blank" : "_top"}
+      target="_blank"
       rel="noopener noreferrer"
       className={`cursor-pointer ${className || ""}`}
       {...rest}
@@ -223,7 +205,7 @@ function GlobalSearch({
 
   const handleResultClick = (result: SearchResult) => {
     if (result.url) {
-      window.open(result.url, CAN_POPUP ? "_blank" : "_top");
+      window.open(result.url, "_blank");
     }
   };
 
@@ -1386,7 +1368,7 @@ function UploadToLinkedInButton({ text, pdfUrl }: { text: string; pdfUrl: string
     // Step 3: Open LinkedIn's post composer
     setTimeout(() => {
       setStep(3);
-      window.open("https://www.linkedin.com/feed/?shareActive=true", CAN_POPUP ? "_blank" : "_top");
+      window.open("https://www.linkedin.com/feed/?shareActive=true", "_blank");
       setTimeout(() => setStep(0), 4000);
     }, 1400);
   };
