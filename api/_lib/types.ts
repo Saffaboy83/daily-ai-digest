@@ -20,6 +20,7 @@ export interface DigestData {
   industryMetrics: MetricEntry[];
   worldNews: WorldNewsItem[];
   socialMedia?: SocialMediaContent;
+  aiToolGuides?: AIToolGuide[];
 }
 
 export interface TopStory {
@@ -98,6 +99,38 @@ export interface WorldNewsItem {
   url?: string;
   timestamp: string;
   importance: "high" | "medium" | "low";
+}
+
+export interface AIToolGuide {
+  id: string;
+  toolName: string;
+  title: string;
+  category: "productivity" | "creative" | "business" | "personal";
+  tagline: string;
+  whatItIs: string;
+  useCase: string;
+  whyItMatters: string;
+  steps: TutorialStep[];
+  proTips?: string[];
+  source: ToolSource;
+  difficulty: "beginner" | "intermediate" | "advanced";
+  timeToComplete: string;
+  toolUrl?: string;
+  iconEmoji: string;
+}
+
+export interface TutorialStep {
+  stepNumber: number;
+  title: string;
+  detail: string;
+  tip?: string;
+}
+
+export interface ToolSource {
+  platform: "youtube" | "reddit" | "substack" | "other";
+  author: string;
+  url: string;
+  title: string;
 }
 
 export interface SocialMediaContent {
