@@ -1391,39 +1391,45 @@ function UploadToLinkedInButton({ text, pdfUrl }: { text: string; pdfUrl: string
     });
   };
 
-  const triggerDownload = (url: string, filename: string) => {
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   const handleUpload = async () => {
     // Step 1: Copy post body to clipboard
     await copyToClipboard(text);
     setStep(1);
 
-    // Step 2: Download carousel PDF
+    // Step 2: Open LinkedIn FIRST (must happen early to avoid popup blockers)
     setTimeout(() => {
-      triggerDownload(pdfUrl, "ai-carousel.pdf");
       setStep(2);
-    }, 600);
-
-    // Step 3: Open LinkedIn's post composer
-    setTimeout(() => {
-      setStep(3);
       window.open("https://www.linkedin.com/feed/?shareActive=true", "_blank");
-      setTimeout(() => setStep(0), 4000);
-    }, 1400);
+    }, 500);
+
+    // Step 3: Download carousel PDF in background via fetch + blob
+    // (cross-origin redirects break <a download>, so we fetch as blob)
+    setTimeout(async () => {
+      setStep(3);
+      try {
+        const res = await fetch(pdfUrl);
+        const blob = await res.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        link.download = "ai-carousel.pdf";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(blobUrl);
+      } catch {
+        // Fallback: open PDF in new tab if fetch fails
+        window.open(pdfUrl, "_blank");
+      }
+      setTimeout(() => setStep(0), 3000);
+    }, 1200);
   };
 
   const labels = [
     { icon: <ExternalLink className="w-3.5 h-3.5" />, text: "Post to LinkedIn" },
     { icon: <Check className="w-3.5 h-3.5" />, text: "Text copied" },
+    { icon: <ExternalLink className="w-3.5 h-3.5" />, text: "Opening LinkedIn..." },
     { icon: <Download className="w-3.5 h-3.5" />, text: "Downloading PDF..." },
-    { icon: <Check className="w-3.5 h-3.5" />, text: "Opening LinkedIn..." },
   ];
   const current = labels[step];
 
