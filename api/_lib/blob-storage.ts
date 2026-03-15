@@ -1,6 +1,6 @@
 import { put, list, head } from "@vercel/blob";
-import type { DigestData, SearchResult } from "./types";
-import { seedDigest, SEED_DATE } from "./seed";
+import type { DigestData, SearchResult } from "./types.js";
+import { seedDigest, SEED_DATE } from "./seed.js";
 
 const DIGEST_PREFIX = "digests/";
 

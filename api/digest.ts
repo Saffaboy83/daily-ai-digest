@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { saveDigest } from "./_lib/blob-storage";
+import { saveDigest } from "./_lib/blob-storage.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS

@@ -1,4 +1,4 @@
-import type { DigestData } from "./types";
+import type { DigestData } from "./types.js";
 
 export const seedDigest: DigestData = {
   generatedAt: "2026-03-14T12:35:00-05:00",

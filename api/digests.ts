@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { listDigestDates } from "./_lib/blob-storage";
+import { listDigestDates } from "./_lib/blob-storage.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS
