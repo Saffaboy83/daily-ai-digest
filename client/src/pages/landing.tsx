@@ -167,15 +167,41 @@ export default function Landing() {
   });
   // Filter to only valid YYYY-MM-DD dates (exclude test entries like "2026-03-15-test")
   const validDates = (datesData?.dates || []).filter((d: string) => /^\d{4}-\d{2}-\d{2}$/.test(d));
-  const latestDate = validDates[0];
 
-  // Fetch the latest digest
-  const { data: digestResponse, isLoading } = useQuery<{ date: string; data: DigestData }>({
-    queryKey: ["/api/digest", latestDate || "latest"],
-    enabled: !!latestDate,
+  // Try the latest date first; if it has no data, walk back through available dates
+  const [activeDateIdx, setActiveDateIdx] = useState(0);
+  const candidateDate = validDates[activeDateIdx] || validDates[0];
+
+  // Fetch the candidate digest — use custom queryFn to handle 404 gracefully
+  const { data: digestResponse, isLoading, isFetched, isError } = useQuery<{ date: string; data: DigestData } | null>({
+    queryKey: ["/api/digest", candidateDate || "latest"],
+    enabled: !!candidateDate,
+    retry: false,
+    queryFn: async () => {
+      const apiBase = "__PORT_5000__".startsWith("__") ? "" : "__PORT_5000__";
+      const resp = await fetch(`${apiBase}/api/digest/${candidateDate}`);
+      if (!resp.ok) return null;
+      return resp.json();
+    },
   });
+
+  // If the fetched digest has no real data (empty, null, or missing key fields), try the next date
+  useEffect(() => {
+    if (!isFetched || isLoading) return;
+    const d = digestResponse?.data;
+    const hasData = d && d.topStories && d.topStories.length > 0;
+    if (!hasData && activeDateIdx < validDates.length - 1) {
+      setActiveDateIdx((prev) => prev + 1);
+    }
+  }, [isFetched, isLoading, digestResponse, activeDateIdx, validDates.length]);
+
+  // Reset index when dates list changes (e.g. new day loaded)
+  useEffect(() => {
+    setActiveDateIdx(0);
+  }, [datesData]);
+
   const digest = digestResponse?.data;
-  const dateStr = latestDate || new Date().toISOString().split("T")[0];
+  const dateStr = candidateDate || new Date().toISOString().split("T")[0];
 
   // Media URLs
   const overviewUrl = `${API_BASE}/api/media/${dateStr}/overview.png`;

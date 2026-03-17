@@ -410,12 +410,32 @@ export default function Dashboard() {
 
   const dateStr = currentDate ? formatDateForApi(currentDate) : "";
 
-  // Fetch digest for current date
-  const { data: digestResponse, isLoading, error } = useQuery<{ date: string; data: DigestData }>({
+  // Fetch digest for current date — handle 404 gracefully
+  const { data: digestResponse, isLoading, error, isFetched: digestFetched } = useQuery<{ date: string; data: DigestData } | null>({
     queryKey: ["/api/digest", dateStr],
     enabled: !!dateStr,
+    retry: false,
+    queryFn: async () => {
+      const resp = await fetch(`/api/digest/${dateStr}`);
+      if (!resp.ok) return null;
+      return resp.json();
+    },
   });
   const digest = digestResponse?.data;
+
+  // If auto-selected date has no data, walk back to the next available date
+  useEffect(() => {
+    if (!digestFetched || isLoading) return;
+    const hasData = digest && digest.topStories && digest.topStories.length > 0;
+    if (!hasData && currentDate && availableDates.length > 1) {
+      const idx = availableDates.indexOf(dateStr);
+      if (idx >= 0 && idx < availableDates.length - 1) {
+        const fallback = availableDates[idx + 1];
+        const [y, m, d] = fallback.split("-").map(Number);
+        setCurrentDate(new Date(y, m - 1, d));
+      }
+    }
+  }, [digestFetched, isLoading, digest, dateStr]);
 
   const goToPrevious = () => {
     const idx = availableDates.indexOf(dateStr);
